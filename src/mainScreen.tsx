@@ -1,6 +1,15 @@
-// import React from "react";
+import {useState} from "react";
 
 const mainScreen = () => {
+    // const [isOpen, setIsOpen] = useState(false);
+    // const [customBuyValue, setCustomBuyValue] = useState(0);
+    // const [customSellValue, setCustomSellValue] = useState(0);
+
+    const [autoBuyStatus, useAutoBuyStatus] = useState(false)
+    const [autoSellStatus, useAutoSellStatus] = useState(false)
+    // const [autoBuyValue, useAutoBuyValue] = useState(0)
+    // const [autoSellValue , useAutoSellValue] = useState(0)
+
   return (
     <>
       <div
@@ -14,6 +23,7 @@ const mainScreen = () => {
           background: "grey",
           opacity: "80%",
           padding: "0px",
+            overflow: "hidden",
         }}
       >
         <div id={"stockSide"}>
@@ -26,13 +36,14 @@ const mainScreen = () => {
           <div
             id={"stockList"}
             style={{
-              width: "25vw",
-              height: "100vh",
+              width: "25%",
+              height: "100%",
               backgroundColor: "#5e5b50",
               display: "flex",
               flexDirection: "column",
               gap: 10,
               paddingTop: "5px",
+                overflow: "auto"
             }}
           >
             <button className={"currencyButton"}>Fun coin</button>
@@ -46,6 +57,7 @@ const mainScreen = () => {
             <button className={"currencyButton"}>Me me me mine coin</button>
           </div>
         </div>
+
         <div
           id={"stockGraph"}
           style={{
@@ -55,9 +67,10 @@ const mainScreen = () => {
             height: "75vh",
             width: "50vw",
             backgroundColor: "#323036",
-            transform: "translate(-50%)",
+              transform: "translate(-50%)",
           }}
         ></div>
+
         <div
           id={"transaction"}
           style={{
@@ -69,22 +82,51 @@ const mainScreen = () => {
             height: "25vh",
             position: "absolute",
             backgroundColor: "#3b3a36",
+
           }}
         >
-          <div id={"buy"} style={{ display: "flex", flexDirection: "column" }}>
-            <button style={{ height: "12.5vh" }}>1</button>
-            <button style={{ height: "12.5vh" }}>10</button>
-            <button style={{ height: "12.5vh" }}>100</button>
-            <button style={{ height: "12.5vh" }}>X</button>
+          <div id={"buy"} style={{ display: "block", flexDirection: "column", width: "33%"}}>
+            <button className={"transactionBuyButton"}>Buy 1</button>
+            <button className={"transactionBuyButton"}>Buy 10</button>
+            <button className={"transactionBuyButton"}>Buy 100</button>
+            <button className={"transactionBuyButton"}>
+                Buy <input type={"number"} style={{width: "30%", outline: "none"}} ></input> amount</button>
           </div>
-          <div id={"sell"} style={{ display: "flex", flexDirection: "column" }}>
-            <button>1</button>
-            <button>10</button>
-            <button>100</button>
-            <button>X</button>
+          <div id={"sell"} style={{ display: "block", flexDirection: "column", width: "33%" }}>
+              <button className={"transactionSellButton"}>Sell 1</button>
+              <button className={"transactionSellButton"}>Sell 10</button>
+              <button className={"transactionSellButton"}>Sell 100</button>
+              <button className={"transactionSellButton"}>
+                  Sell <input type={"number"} style={{width: "30%", outline: "none", scale: "1"}} onInput={()=>{
+
+              }}></input> amount
+              </button>
           </div>
+            <div id={"sell"} style={{display: "block", flexDirection: "column", width: "33%"}}>
+                <button className={"activateAutoTransactionButton"} style={{backgroundColor: autoBuyStatus ? "green" : "red"}} onClick={() => {
+                    useAutoBuyStatus(!autoBuyStatus)
+                }}>Auto buy:</button>
+                <button className={"activateAutoTransactionButton"} style={{backgroundColor: autoSellStatus ? "green" : "red"}} onClick={() => {
+                    useAutoSellStatus(!autoSellStatus)
+                }}>Auto sell:</button>
+
+                <button className={"autoTransactionAmountButton"}>Buy at:</button>
+                <button className={"autoTransactionAmountButton"}>Sell at:</button>
+            </div>
         </div>
+          <div id={"inter-diplomacy"} style={{left: "75%", top: "0%", position: "absolute", height: "100%", width: "25%", backgroundColor: "#02095e", display: "flex", flexDirection: "column"}}>
+              <button className={"rightTab"} style={{backgroundColor: "rgba(100, 255, 5, 1)"}}>Calender</button>
+              <button className={"rightTab"} style={{backgroundColor: "rgba(255, 240, 5, 1)"}}>Bank</button>
+              <button className={"rightTab"} style={{backgroundColor: "blue"}}>Government</button>
+              <button className={"rightTab"} style={{backgroundColor: "cyan"}}>Policies</button>
+              <button className={"rightTab"} style={{backgroundColor: "#6b6b51"}}>News</button>
+              <button className={"rightTab"} style={{backgroundColor: "honeydew"}}>Casino</button>
+              <button className={"rightTab"} style={{backgroundColor: "indianred"}}>Licenses</button>
+              <button className={"rightTab"} style={{backgroundColor: "rgba(255, 240, 5, 1)"}}>Income summary</button>
+
+          </div>
       </div>
+
     </>
   );
 };

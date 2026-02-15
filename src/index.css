@@ -44,6 +44,13 @@ h1 {
   border-radius: 16px;
 }
 
+.currencyButton:hover {
+  background-color: #585ed1;
+  /*box-shadow: 0 8px 16px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);*/
+    box-shadow: 0 0 16px 2px darkblue;
+  scale: 1.03 !important;
+}
+
 .currencySelectionBar {
   width: 25vw;
   height: 100px;
@@ -54,14 +61,87 @@ h1 {
 
 .currencySelection {
   width: 6.25vw;
-  background-color: #820d0d;
+  background-color: #c20a0a;
   font-size: 25px;
   color: #171830;
+}
+
+.currencySelection:hover {
+  background-color: #a61313;
+  scale: 1.1 !important;
+}
+
+.transactionBuyButton {
+  width: 50%;
+  height: 50%;
+  background-color: darkgreen;
+  border-radius: 20%;
+text-decoration: none;
+  font-size: 133%;
+}
+
+.transactionBuyButton:hover {
+  background-color: green;
+  scale: 1.05 !important;
+}
+
+.transactionSellButton {
+  width: 50%;
+  height: 50%;
+  background-color: orangered;
+  border-radius: 15%;
+  font-size: 133%;
+
+}
+
+.transactionSellButton:hover {
+  background-color: orange;
+  scale: 1.1 !important;
+}
+
+.activateAutoTransactionButton {
+  width: 50%;
+  height: 50%;
+  box-shadow: 0 0 purple;
+  font-size: 200%;
+
+  /*background: red*/
+}
+
+.activateAutoTransactionButton:hover {
+  box-shadow: 0 0 64px 8px purple;
+  scale: 1.1 !important;
+  /*animation: alternate-reverse 5s;*/
+}
+
+/*.activateAutoTransactionButton:active {*/
+/*  background-color: green;*/
+/*}*/
+
+.autoTransactionAmountButton {
+  width: 50%;
+  height: 50%;
+  background-color: rebeccapurple;
+  font-size: 150%;
+}
+
+.autoTransactionAmountButton:hover {
+  background-color: mediumpurple;
+  scale: 1.1 !important;
 }
 
 /*.stockList:hover {*/
 /*  border-color: #646cff;*/
 /*}*/
+.rightTab  {
+  width: 100%;
+  height: 10%;
+  color: rgba(1, 1, 1, 1);
+  text-align: left;
+  font-size: 250%;
+  opacity: 55%;
+
+}
 
 button {
   border-radius: 16px;
