@@ -1,5 +1,4 @@
-import React from "react";
-import { world } from "./basic.tsx";
+// import React from "react";
 
 const mainScreen = () => {
   return (
