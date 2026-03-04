@@ -40,7 +40,7 @@ h1 {
   height: 1vw;
   border-radius: 1vw;
   background-color: yellow;
-
+  transform: translate(-50%, -50%);
 
 }
 

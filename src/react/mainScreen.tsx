@@ -1,7 +1,5 @@
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import type { Props } from "./ScreenHandler.tsx";
-import type { GraphPoint } from "../main.tsx";
-import { BankScreen } from "./bankScreen.tsx";
 import { StockGraph } from "./stockGraph.tsx";
 
 export const MainScreen = ({ setCurrentMenu }: Props) => {
@@ -31,6 +29,7 @@ export const MainScreen = ({ setCurrentMenu }: Props) => {
           overflow: "hidden",
         }}
       >
+        <StockGraph></StockGraph>
         <div id={"stockSide"}>
           <div id={"currencySelection"} className="currencySelectionBar">
             <button className={"currencySelection"}>STOCKS</button>
@@ -62,8 +61,6 @@ export const MainScreen = ({ setCurrentMenu }: Props) => {
             <button className={"currencyButton"}>Me me me mine coin</button>
           </div>
         </div>
-
-        <StockGraph></StockGraph>
 
         <div
           id={"transaction"}
