@@ -1,6 +1,10 @@
 import { useState } from "react";
+import type { Props } from "./ScreenHandler.tsx";
+import type { GraphPoint } from "../main.tsx";
+import { BankScreen } from "./bankScreen.tsx";
+import { StockGraph } from "./stockGraph.tsx";
 
-export const MainScreen = () => {
+export const MainScreen = ({ setCurrentMenu }: Props) => {
   // const [isOpen, setIsOpen] = useState(false);
   // const [customBuyValue, setCustomBuyValue] = useState(0);
   // const [customSellValue, setCustomSellValue] = useState(0);
@@ -59,18 +63,7 @@ export const MainScreen = () => {
           </div>
         </div>
 
-        <div
-          id={"stockGraph"}
-          style={{
-            left: "50vw",
-            top: 0,
-            position: "absolute",
-            height: "75vh",
-            width: "50vw",
-            backgroundColor: "#323036",
-            transform: "translate(-50%)",
-          }}
-        ></div>
+        <StockGraph></StockGraph>
 
         <div
           id={"transaction"}
@@ -91,7 +84,7 @@ export const MainScreen = () => {
               display: "flex",
               flexDirection: "column",
               flexWrap: "wrap",
-              width: "33%",
+              width: "33.33%",
               height: "100%",
             }}
           >
@@ -118,7 +111,7 @@ export const MainScreen = () => {
               display: "flex",
               flexDirection: "column",
               flexWrap: "wrap",
-              width: "33%",
+              width: "33.33%",
               height: "100%",
             }}
           >
@@ -143,7 +136,11 @@ export const MainScreen = () => {
           </div>
           <div
             id={"sell"}
-            style={{ display: "block", flexDirection: "column", width: "33%" }}
+            style={{
+              display: "block",
+              flexDirection: "column",
+              width: "33.33%",
+            }}
           >
             <button
               className={"activateAutoTransactionButton"}

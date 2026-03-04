@@ -1,4 +1,6 @@
-export const BankScreen = () => {
+import type { Props } from "./ScreenHandler.tsx";
+
+export const BankScreen = ({ setCurrentMenu }: Props) => {
   return (
     <div
       id="bankScreen"
@@ -53,8 +55,17 @@ export const BankScreen = () => {
           display: "flex",
           flexDirection: "column",
           paddingTop: "5%",
+          alignItems: "center",
         }}
       >
+        <text style={{ textAlign: "center", fontSize: "500%" }}>
+          Bank Balance:{" "}
+          <text
+            style={{ textAlign: "center", fontSize: "100%", color: "yellow" }}
+          >
+            MONEY
+          </text>
+        </text>
         <button id={"loan"} className={"bankActions"}>
           Take loan{" "}
           <input className={"bankInput"} onInput={() => {}}></input>{" "}
@@ -70,6 +81,23 @@ export const BankScreen = () => {
         <button id={"deposit"} className={"bankActions"}>
           Withdraw{" "}
           <input className={"bankInput"} onInput={() => {}}></input>{" "}
+        </button>
+        <button
+          style={{
+            color: "purple",
+            fontSize: "250%",
+            height: "10%",
+            width: "25%",
+            bottom: "5%",
+            position: "absolute",
+
+            // transform: "translate(-50%, -50%)",
+          }}
+          onClick={() => {
+            setCurrentMenu("main");
+          }}
+        >
+          RETURN
         </button>
       </div>
     </div>

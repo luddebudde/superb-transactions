@@ -12,3 +12,34 @@ const prepareGame = () => {
 };
 
 prepareGame();
+
+export type GraphPoint = {
+  id: number;
+  pos: {
+    x: number;
+    y: number;
+  };
+  scale: number;
+  value: number;
+  color: string;
+};
+
+const funCoin = {
+  id: "funCoin",
+  value: 5,
+  points: new Array(5),
+};
+
+funCoin.points.push(1);
+funCoin.points.push(1);
+
+console.log(funCoin);
+const coins = [funCoin];
+
+// const
+
+const game = () => {
+  requestAnimationFrame(game);
+};
+
+game();
