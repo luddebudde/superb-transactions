@@ -1,6 +1,5 @@
-import type { GraphPoint } from "../main.tsx";
 import { useEffect, useRef, useState } from "react";
-import { world } from "../basic.tsx";
+import { random, world } from "../basic.tsx";
 
 export const StockGraph = () => {
   const pointCount = 21;
@@ -16,13 +15,86 @@ export const StockGraph = () => {
       },
       scale: 1,
       color: "yellow",
+<<<<<<< HEAD
+      value: random(0, 50),
+    })),
+  );
+  const [xValues, setXValues] = useState([]);
+  const [yValues, setYValues] = useState([]);
+=======
       value: Math.random() * 100,
     })),
   );
   console.log(points);
   const [xValues, setXValues] = useState([]);
+>>>>>>> origin/main
 
   useEffect(() => {
+    const interval = setInterval(() => {
+      if (!graphRef.current) return;
+
+      const rect = graphRef.current.getBoundingClientRect();
+
+      setGraphSize({
+        width: rect.width,
+        height: rect.height,
+      });
+
+      setPoints((prevPoints) => {
+        const spacing = rect.width / (pointCount - 1);
+
+        const maxValue = Math.max(...prevPoints.map((p) => p.value));
+        const newPoints = prevPoints.slice(1).map((p, i) => ({
+          ...p,
+          id: i,
+          pos: {
+            y: rect.height - rect.height * (p.value / maxValue),
+            x: p.pos.x - spacing,
+          },
+          value: p.value,
+        }));
+
+        const previousValue: number = newPoints[newPoints.length - 1].value;
+        const newValue = previousValue * random(0.6, 1.4, false);
+
+        // Make maxValue dependent on the y-position formula even here
+        console.log(rect.height - (newValue * 500) / maxValue, newValue);
+        newPoints.push({
+          id: pointCount - 1,
+          pos: {
+            x: rect.width,
+            y: rect.height - rect.height * (newValue / maxValue),
+          },
+          scale: 1,
+          color: "yellow",
+          value: newValue,
+        });
+
+        return newPoints;
+      });
+
+      // Replace points.map with the actual array of points, so that the value on the x-axis is dynamic
+      setYValues(() => {
+        const spacing = rect.height / 5;
+        const maxValue = Math.max(...points.map((p) => p.value));
+
+        return Array.from({ length: 5 }, (_, i) => ({
+          id: i,
+          pos: {
+            x: 0,
+            y: spacing * i,
+          },
+          scale: 1,
+          color: "black",
+          value: maxValue * (1 / (i + 1)),
+        }));
+      });
+    }, 1000);
+    return () => clearInterval(interval);
+  }, [graphSize]);
+
+  useEffect(() => {
+    // const interval = setInterval(() => {
     if (!graphRef.current) return;
 
     const rect = graphRef.current.getBoundingClientRect();
@@ -31,6 +103,27 @@ export const StockGraph = () => {
       width: rect.width,
       height: rect.height,
     });
+<<<<<<< HEAD
+
+    setXValues(() => {
+      const spacing = rect.width / (pointCount - 1);
+
+      return Array.from({ length: pointCount }, (_, i) => ({
+        id: i,
+        pos: {
+          x: rect.width - spacing * i,
+          y: 0,
+        },
+        scale: 1,
+        color: "black",
+        value: i,
+      }));
+    });
+  }, []);
+
+  const linePoints = points.map((p) => `${p.pos.x},${p.pos.y}`).join(" ");
+
+=======
 
     const spacing = graphSize.width / pointCount + 1;
     // const points = Array.from({ length: pointCount }, (_, i) => ({
@@ -104,6 +197,7 @@ export const StockGraph = () => {
 
   const linePoints = points.map((p) => `${p.pos.x},${p.pos.y}`).join(" ");
 
+>>>>>>> origin/main
   return (
     <div
       id={"stockGraph"}
@@ -112,7 +206,7 @@ export const StockGraph = () => {
         left: "50vw",
         top: 0,
         position: "absolute",
-        height: "75vh",
+        height: "75%",
         width: "50vw",
         transform: "translate(-50%)",
         display: "flex",
@@ -159,6 +253,26 @@ export const StockGraph = () => {
           className="graphPoint"
         >
           {p.id}
+        </div>
+      ))}
+      {yValues.map((p) => (
+        <div
+          key={p.id}
+          style={{
+            // scale: p.scale,
+            position: "absolute",
+            top: p.pos.y,
+            left: 0,
+            color: "black",
+            backgroundColor: "orange",
+            width: "0.75vw",
+            height: "2vh",
+            fontSize: "100%",
+            textAlign: "center",
+          }}
+          className="graphPoint"
+        >
+          {Math.round(p.value)}
         </div>
       ))}
     </div>
