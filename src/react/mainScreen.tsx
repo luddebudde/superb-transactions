@@ -1,6 +1,9 @@
 import { useEffect, useRef, useState } from "react";
-import type { Props } from "./ScreenHandler.tsx";
 import { StockGraph } from "./stockGraph.tsx";
+
+export type Props = {
+  setCurrentMenu: React.Dispatch<React.SetStateAction<"main" | "bank">>;
+};
 
 export const MainScreen = ({ setCurrentMenu }: Props) => {
   // const [isOpen, setIsOpen] = useState(false);
