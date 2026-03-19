@@ -1,5 +1,8 @@
 import { useEffect, useRef, useState } from "react";
 import { StockGraph } from "./stockGraph.tsx";
+import { TransactionArea } from "./transactionArea.tsx";
+import { CurrencySelection } from "./currencySelection.tsx";
+import { CurrencyProvider } from "./test.tsx";
 
 export type Props = {
   setCurrentMenu: React.Dispatch<React.SetStateAction<"main" | "bank">>;
@@ -33,153 +36,157 @@ export const MainScreen = ({ setCurrentMenu }: Props) => {
         }}
       >
         <StockGraph></StockGraph>
-        <div id={"stockSide"}>
-          <div id={"currencySelection"} className="currencySelectionBar">
-            <button className={"currencySelection"}>STOCKS</button>
-            <button className={"currencySelection"}>SHARES</button>
-            <button className={"currencySelection"}>CRYPTO</button>
-            <button className={"currencySelection"}>!</button>
-          </div>
-          <div
-            id={"stockList"}
-            style={{
-              width: "25%",
-              height: "100%",
-              backgroundColor: "#5e5b50",
-              display: "flex",
-              flexDirection: "column",
-              gap: 10,
-              paddingTop: "5px",
-              overflow: "auto",
-            }}
-          >
-            <button className={"currencyButton"}>Fun coin</button>
-            <button className={"currencyButton"}>Smart ocin</button>
-            <button className={"currencyButton"}>Dumb dumb coin</button>
-            <button className={"currencyButton"}>Silly coin</button>
-            <button className={"currencyButton"}>Assbass ocin</button>
-            <button className={"currencyButton"}>Spacy dumb coin</button>
-            <button className={"currencyButton"}>Atom-tennis coin</button>
-            <button className={"currencyButton"}>Brian ocin</button>
-            <button className={"currencyButton"}>Me me me mine coin</button>
-          </div>
-        </div>
+        <CurrencyProvider>
+          <CurrencySelection></CurrencySelection>
+        </CurrencyProvider>
+        {/*<div id={"stockSide"}>*/}
+        {/*  <div id={"currencySelection"} className="currencySelectionBar">*/}
+        {/*    <button className={"currencySelection"}>STOCKS</button>*/}
+        {/*    <button className={"currencySelection"}>SHARES</button>*/}
+        {/*    <button className={"currencySelection"}>CRYPTO</button>*/}
+        {/*    <button className={"currencySelection"}>!</button>*/}
+        {/*  </div>*/}
+        {/*  <div*/}
+        {/*    id={"stockList"}*/}
+        {/*    style={{*/}
+        {/*      width: "25%",*/}
+        {/*      height: "100%",*/}
+        {/*      backgroundColor: "#5e5b50",*/}
+        {/*      display: "flex",*/}
+        {/*      flexDirection: "column",*/}
+        {/*      gap: 10,*/}
+        {/*      paddingTop: "5px",*/}
+        {/*      overflow: "auto",*/}
+        {/*    }}*/}
+        {/*  >*/}
+        {/*    <button className={"currencyButton"}>Fun coin</button>*/}
+        {/*    <button className={"currencyButton"}>Smart ocin</button>*/}
+        {/*    <button className={"currencyButton"}>Dumb dumb coin</button>*/}
+        {/*    <button className={"currencyButton"}>Silly coin</button>*/}
+        {/*    <button className={"currencyButton"}>Assbass ocin</button>*/}
+        {/*    <button className={"currencyButton"}>Spacy dumb coin</button>*/}
+        {/*    <button className={"currencyButton"}>Atom-tennis coin</button>*/}
+        {/*    <button className={"currencyButton"}>Brian ocin</button>*/}
+        {/*    <button className={"currencyButton"}>Me me me mine coin</button>*/}
+        {/*  </div>*/}
+        {/*</div>*/}
 
-        <div
-          id={"transaction"}
-          style={{
-            display: "flex",
-            flexDirection: "row",
-            left: "25vw",
-            top: "75vh",
-            width: "50vw",
-            height: "25vh",
-            position: "absolute",
-            backgroundColor: "#3b3a36",
-          }}
-        >
-          <div
-            id={"buy"}
-            style={{
-              display: "flex",
-              flexDirection: "column",
-              flexWrap: "wrap",
-              width: "33.33%",
-              height: "100%",
-            }}
-          >
-            <button className={"transactionBuyButton"}>Buy 1</button>
-            <button className={"transactionBuyButton"}>Buy 10</button>
-            <button className={"transactionBuyButton"}>Buy 100</button>
-            <button className={"transactionBuyButton"}>
-              Buy{" "}
-              <input
-                type={"number"}
-                style={{
-                  width: "30%",
-                  height: "15%",
-                  fontSize: "80%",
-                  outline: "none",
-                }}
-              ></input>{" "}
-              amount
-            </button>
-          </div>
-          <div
-            id={"sell"}
-            style={{
-              display: "flex",
-              flexDirection: "column",
-              flexWrap: "wrap",
-              width: "33.33%",
-              height: "100%",
-            }}
-          >
-            <button className={"transactionSellButton"}>Sell 1</button>
-            <button className={"transactionSellButton"}>Sell 10</button>
-            <button className={"transactionSellButton"}>Sell 100</button>
-            <button className={"transactionSellButton"}>
-              Sell{" "}
-              <input
-                type={"number"}
-                style={{
-                  width: "40%",
-                  height: "15%",
-                  fontSize: "80%",
-                  outline: "none",
-                  scale: "1",
-                }}
-                onInput={() => {}}
-              ></input>{" "}
-              amount
-            </button>
-          </div>
-          <div
-            id={"sell"}
-            style={{
-              display: "block",
-              flexDirection: "column",
-              width: "33.33%",
-            }}
-          >
-            <button
-              className={"activateAutoTransactionButton"}
-              style={{ backgroundColor: autoBuyStatus ? "green" : "red" }}
-              onClick={() => {
-                setAutoBuyStatus(!autoBuyStatus);
-              }}
-            >
-              Auto buy:
-            </button>
-            <button
-              className={"activateAutoTransactionButton"}
-              style={{ backgroundColor: autoSellStatus ? "green" : "red" }}
-              onClick={() => {
-                setAutoSellStatus(!autoSellStatus);
-              }}
-            >
-              Auto sell:
-            </button>
+        <TransactionArea></TransactionArea>
+        {/*<div*/}
+        {/*  id={"transaction"}*/}
+        {/*  style={{*/}
+        {/*    display: "flex",*/}
+        {/*    flexDirection: "row",*/}
+        {/*    left: "25vw",*/}
+        {/*    top: "75vh",*/}
+        {/*    width: "50vw",*/}
+        {/*    height: "25vh",*/}
+        {/*    position: "absolute",*/}
+        {/*    backgroundColor: "#3b3a36",*/}
+        {/*  }}*/}
+        {/*>*/}
+        {/*  <div*/}
+        {/*    id={"buy"}*/}
+        {/*    style={{*/}
+        {/*      display: "flex",*/}
+        {/*      flexDirection: "column",*/}
+        {/*      flexWrap: "wrap",*/}
+        {/*      width: "33.33%",*/}
+        {/*      height: "100%",*/}
+        {/*    }}*/}
+        {/*  >*/}
+        {/*    <button className={"transactionBuyButton"}>Buy 1</button>*/}
+        {/*    <button className={"transactionBuyButton"}>Buy 10</button>*/}
+        {/*    <button className={"transactionBuyButton"}>Buy 100</button>*/}
+        {/*    <button className={"transactionBuyButton"}>*/}
+        {/*      Buy{" "}*/}
+        {/*      <input*/}
+        {/*        type={"number"}*/}
+        {/*        style={{*/}
+        {/*          width: "30%",*/}
+        {/*          height: "15%",*/}
+        {/*          fontSize: "80%",*/}
+        {/*          outline: "none",*/}
+        {/*        }}*/}
+        {/*      ></input>{" "}*/}
+        {/*      amount*/}
+        {/*    </button>*/}
+        {/*  </div>*/}
+        {/*  <div*/}
+        {/*    id={"sell"}*/}
+        {/*    style={{*/}
+        {/*      display: "flex",*/}
+        {/*      flexDirection: "column",*/}
+        {/*      flexWrap: "wrap",*/}
+        {/*      width: "33.33%",*/}
+        {/*      height: "100%",*/}
+        {/*    }}*/}
+        {/*  >*/}
+        {/*    <button className={"transactionSellButton"}>Sell 1</button>*/}
+        {/*    <button className={"transactionSellButton"}>Sell 10</button>*/}
+        {/*    <button className={"transactionSellButton"}>Sell 100</button>*/}
+        {/*    <button className={"transactionSellButton"}>*/}
+        {/*      Sell{" "}*/}
+        {/*      <input*/}
+        {/*        type={"number"}*/}
+        {/*        style={{*/}
+        {/*          width: "40%",*/}
+        {/*          height: "15%",*/}
+        {/*          fontSize: "80%",*/}
+        {/*          outline: "none",*/}
+        {/*          scale: "1",*/}
+        {/*        }}*/}
+        {/*        onInput={() => {}}*/}
+        {/*      ></input>{" "}*/}
+        {/*      amount*/}
+        {/*    </button>*/}
+        {/*  </div>*/}
+        {/*  <div*/}
+        {/*    id={"sell"}*/}
+        {/*    style={{*/}
+        {/*      display: "block",*/}
+        {/*      flexDirection: "column",*/}
+        {/*      width: "33.33%",*/}
+        {/*    }}*/}
+        {/*  >*/}
+        {/*    <button*/}
+        {/*      className={"activateAutoTransactionButton"}*/}
+        {/*      style={{ backgroundColor: autoBuyStatus ? "green" : "red" }}*/}
+        {/*      onClick={() => {*/}
+        {/*        setAutoBuyStatus(!autoBuyStatus);*/}
+        {/*      }}*/}
+        {/*    >*/}
+        {/*      Auto buy:*/}
+        {/*    </button>*/}
+        {/*    <button*/}
+        {/*      className={"activateAutoTransactionButton"}*/}
+        {/*      style={{ backgroundColor: autoSellStatus ? "green" : "red" }}*/}
+        {/*      onClick={() => {*/}
+        {/*        setAutoSellStatus(!autoSellStatus);*/}
+        {/*      }}*/}
+        {/*    >*/}
+        {/*      Auto sell:*/}
+        {/*    </button>*/}
 
-            <button className={"autoTransactionAmountButton"}>
-              Buy at:{" "}
-              <input
-                type={"number"}
-                style={{ width: "30%", outline: "none", scale: "1" }}
-                onInput={() => {}}
-              ></input>{" "}
-            </button>
+        {/*    <button className={"autoTransactionAmountButton"}>*/}
+        {/*      Buy at:{" "}*/}
+        {/*      <input*/}
+        {/*        type={"number"}*/}
+        {/*        style={{ width: "30%", outline: "none", scale: "1" }}*/}
+        {/*        onInput={() => {}}*/}
+        {/*      ></input>{" "}*/}
+        {/*    </button>*/}
 
-            <button className={"autoTransactionAmountButton"}>
-              Sell at:{" "}
-              <input
-                type={"number"}
-                style={{ width: "30%", outline: "none", scale: "1" }}
-                onInput={() => {}}
-              ></input>{" "}
-            </button>
-          </div>
-        </div>
+        {/*    <button className={"autoTransactionAmountButton"}>*/}
+        {/*      Sell at:{" "}*/}
+        {/*      <input*/}
+        {/*        type={"number"}*/}
+        {/*        style={{ width: "30%", outline: "none", scale: "1" }}*/}
+        {/*        onInput={() => {}}*/}
+        {/*      ></input>{" "}*/}
+        {/*    </button>*/}
+        {/*  </div>*/}
+        {/*</div>*/}
         <div
           id={"inter-diplomacy"}
           style={{

@@ -53,8 +53,13 @@ h1 {
   border-radius: 16px;
 }
 
+.currencyButton.active {
+  background-color: darkred;
+  color: black;
+}
+
 .currencyButton:hover {
-  background-color: #585ed1;
+  /*background-color: #585ed1;*/
   /*box-shadow: 0 8px 16px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);*/
     box-shadow: 0 0 16px 2px darkblue;
   scale: 1.03 !important;
