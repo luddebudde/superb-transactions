@@ -15,20 +15,12 @@ export const StockGraph = () => {
       },
       scale: 1,
       color: "yellow",
-<<<<<<< HEAD
       value: random(0, 50),
     })),
   );
   const [xValues, setXValues] = useState([]);
   const [yValues, setYValues] = useState([]);
-=======
-      value: Math.random() * 100,
-    })),
-  );
-  console.log(points);
-  const [xValues, setXValues] = useState([]);
->>>>>>> origin/main
-
+  //aa
   useEffect(() => {
     const interval = setInterval(() => {
       if (!graphRef.current) return;
@@ -103,7 +95,6 @@ export const StockGraph = () => {
       width: rect.width,
       height: rect.height,
     });
-<<<<<<< HEAD
 
     setXValues(() => {
       const spacing = rect.width / (pointCount - 1);
@@ -123,81 +114,6 @@ export const StockGraph = () => {
 
   const linePoints = points.map((p) => `${p.pos.x},${p.pos.y}`).join(" ");
 
-=======
-
-    const spacing = graphSize.width / pointCount + 1;
-    // const points = Array.from({ length: pointCount }, (_, i) => ({
-    //   id: i,
-    //   pos: {
-    //     x: graphSize.width - spacing * i - 25,
-    //     y: graphSize.height * 0.5 * (i / 10) + (Math.random() + 0.99) * 10,
-    //   },
-    //   scale: 1,
-    //   color: "yellow",
-    //   value: Math.random() * 100,
-    // }));
-
-    // const newPoints = points.map((point: GraphPoint) => {
-    //   if (point.id === pointCount - 1) {
-    //     points.shift();
-    //     points.push({
-    //       id: 0,
-    //       pos: {
-    //         x: 0,
-    //         y: 0,
-    //       },
-    //       scale: 1,
-    //       color: "yellow",
-    //       value: Math.random() * 100,
-    //     });
-    //   }
-    //   console.log(points[point.id].pos);
-    //   point.id++;
-    //   // point = points[point.id];
-    //   point.pos.x = points[point.id].pos.x;
-    //   point.pos.y = points[point.id].pos.y;
-    //   point.value = points[point.id].value;
-    // });
-    //
-    // setPoints(newPoints);
-    const newPoints = points.slice(1).map((p, i) => ({
-      ...p,
-      id: i,
-      pos: {
-        ...p.pos,
-        x: p.pos.x - spacing,
-      },
-    }));
-
-    newPoints.push({
-      id: pointCount - 1,
-      pos: {
-        x: graphSize.width,
-        y: Math.random() * graphSize.height,
-      },
-      scale: 1,
-      color: "yellow",
-      value: Math.random() * 100,
-    });
-
-    setPoints(newPoints);
-
-    const xValue = Array.from({ length: pointCount }, (_, i) => ({
-      id: i,
-      pos: {
-        x: graphSize.width - spacing * i - 25,
-        y: world.height * 0.33,
-      },
-      scale: 1,
-      color: "black",
-      value: i,
-    }));
-    setXValues(xValue);
-  }, [graphSize]);
-
-  const linePoints = points.map((p) => `${p.pos.x},${p.pos.y}`).join(" ");
-
->>>>>>> origin/main
   return (
     <div
       id={"stockGraph"}
