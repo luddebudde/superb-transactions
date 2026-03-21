@@ -1,20 +1,6 @@
-import { createContext, useContext, useState } from "react";
+import { createContext, useContext } from "react";
 
-// 1. Skapa context
-const CurrencyContext = createContext(null);
-
-// 2. Provider (håller state)
-export const CurrencyProvider = ({ children }) => {
-  const [selectedCurrency, setSelectedCurrency] = useState("firstCoin");
-
-  return (
-    <CurrencyContext.Provider value={{ selectedCurrency, setSelectedCurrency }}>
-      {children}
-    </CurrencyContext.Provider>
-  );
-};
-
-// 3. Custom hook (valfri men clean)
+export const CurrencyContext = createContext(null);
 export const useCurrency = () => {
   const context = useContext(CurrencyContext);
 

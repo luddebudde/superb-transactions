@@ -15,7 +15,5 @@ export const convertPrefix: string = (value: number) => {
   // Fix so that 100s work as well
   const selectedPrefix = prefixes[Math.floor(stringified.length / 3)];
 
-  console.log(stringified, selectedPrefix);
-
   return stringified.concat(selectedPrefix);
 };
