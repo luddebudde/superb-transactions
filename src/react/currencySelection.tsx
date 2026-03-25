@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { type ReactNode, useEffect, useState } from "react";
 import { random } from "../basic.tsx";
 import { pointCount } from "./stockGraph.tsx";
 import { CurrencyContext, useCurrency } from "./test.tsx";
@@ -7,15 +7,14 @@ import type { Vec2 } from "../main.tsx";
 type Currency = {
   id: number;
   label: string;
-  pos: Vec2;
   points: {
     id: number;
     pos: Vec2;
     scale: number;
     color: string;
     value: number;
-  };
-  yValues: yValue;
+  }[];
+  yValues: yValue[];
 };
 
 type yValue = {
@@ -26,32 +25,32 @@ type yValue = {
   scale: number;
 };
 
-export const CurrencyProvider = ({ children }) => {
+interface CurrencyProviderProps {
+  children: ReactNode;
+}
+
+export const CurrencyProvider = ({ children }: CurrencyProviderProps) => {
   const [currencies, setCurrencies] = useState<Currency[]>([]);
-  const [selectedCurrency, setSelectedCurrency] = useState({
-    points: [],
-    yValues: [],
-  });
-  const [yValues, setYValues] = useState<yValue[]>([]);
-  const [points, setPoints] = useState(
-    Array.from({ length: pointCount }, (_, i) => ({
-      id: i,
-      pos: { x: 50 * i, y: 50 * i },
-      scale: 1,
-      color: "yellow",
-      value: random(0, 5000),
-    })),
-  );
+  const [selectedCurrency, setSelectedCurrency] = useState<Currency | null>([]);
+  // const [points, setPoints] = useState(
+  //
+  // );
 
   const createCurrency = (label: string) => {
-    const newCurrency = {
+    const newCurrency: Currency = {
       id: label,
       label,
-      points,
-      setPoints,
-      yValues,
-      setYValues,
+      points: Array.from({ length: pointCount }, (_, i) => ({
+        id: i,
+        pos: { x: 50 * i, y: 50 * i },
+        scale: 1,
+        color: "yellow",
+        value: random(0, 5000),
+      })),
+      yValues: [],
     };
+
+    // createLogger(label);
 
     setSelectedCurrency(newCurrency);
     setCurrencies((prev) => [...prev, newCurrency]);
@@ -61,6 +60,7 @@ export const CurrencyProvider = ({ children }) => {
     <CurrencyContext.Provider
       value={{
         currencies,
+        setCurrencies,
         createCurrency,
         selectedCurrency,
         setSelectedCurrency,
@@ -73,26 +73,45 @@ export const CurrencyProvider = ({ children }) => {
 
 export const CurrencySelection = () => {
   // const [selectedCurrency, setSelectedCurrency] = useState("firstCoin");
-  const { selectedCurrency, setSelectedCurrency } = useCurrency();
-  const { currencies, createCurrency } = useCurrency();
+  const {
+    currencies,
+    createCurrency,
+    setCurrencies,
+    selectedCurrency,
+    setSelectedCurrency,
+  } = useCurrency();
 
   useEffect(() => {
-    const initialCurrencies = ["first", "second"].map((label) => ({
-      id: label,
-      label,
-      points: Array.from({ length: pointCount }, (_, i) => ({
-        id: i,
-        pos: { x: 50 * i, y: 50 * i },
-        scale: 1,
-        color: "yellow",
-        value: random(0, 5000),
-      })),
-    }));
+    const initialCurrencies = ["first", "second"].map(
+      (label: string): Currency => ({
+        id: Math.random(),
+        label,
+        points: Array.from({ length: pointCount }, (_, i) => ({
+          id: Math.random(),
+          pos: { x: 50 * i, y: 50 * i },
+          scale: 1,
+          color: "yellow",
+          value: random(0, 5000),
+        })),
+        yValues: [],
+      }),
 
-    ["first", "second"].forEach((label) => {
-      createCurrency(label);
+      // createCurrency(label),
+    );
+
+    // console.log(initialCurrencies);
+
+    initialCurrencies.forEach((currency) => {
+      // setCurrencies((prev) => [...prev, currency]);
+      createCurrency(currency.label);
     });
+
+    // if (currencies.length > 0 && !selectedCurrency) {
+    //   setSelectedCurrency(currencies[0]);
+    // }
   }, []);
+
+  // console.log(currencies);
 
   return (
     <div id={"stockSide"}>

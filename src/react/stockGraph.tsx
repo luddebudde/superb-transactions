@@ -42,14 +42,31 @@ export const StockGraph = () => {
         currencies.forEach((currency) => {
           const maxValue = Math.max(...currency.points.map((p) => p.value));
 
-          currency.setPoints((prevPoints) => {
+          currency.points.forEach((prevPoint) => {
             const spacing = rect.width / (pointCount - 1);
+            const prevPoints = currency.points;
 
             const previousValue: number =
               prevPoints[prevPoints.length - 1].value;
             const newValue = previousValue * random(0.6, 1.4, false);
 
-            const newPoints = prevPoints.slice(1).map((p, i) => ({
+            const newPoint = {
+              id: prevPoints[prevPoints.length - 1].id + 1,
+              pos: {
+                y:
+                  rect.height -
+                  rect.height * (previousValue / Math.max(newValue, maxValue)),
+                x: 0,
+              },
+              value: newValue,
+            };
+
+            // prevPoints.push(newPoint);
+
+            console.log(prevPoints[prevPoints.length - 1].id, newPoint);
+
+            // Make maxValue dependent on the y-position formula even here
+            return prevPoints.slice(1).map((p, i) => ({
               ...p,
               id: i,
               pos: {
@@ -60,28 +77,9 @@ export const StockGraph = () => {
               },
               value: p.value,
             }));
-
-            // Make maxValue dependent on the y-position formula even here
-            // newPoints.push({
-            //   id: pointCount - 1,
-            //   pos: {
-            //     x: rect.width,
-            //     y:
-            //       rect.height -
-            //       rect.height * (newValue / Math.max(newValue, maxValue)),
-            //   },
-            //   scale: 1,
-            //   color: "yellow",
-            //   value: newValue,
-            // });
-
-            return newPoints;
           });
 
-          // console.log(currency.points[1].value);
-
-          // Replace points.map with the actual array of points, so that the value on the x-axis is dynamic
-          currency.setYValues(() => {
+          currency.yValues.forEach(() => {
             const spacing = rect.height / 5;
             return Array.from({ length: 5 }, (_, i) => ({
               id: i,
@@ -95,12 +93,14 @@ export const StockGraph = () => {
             }));
           });
         });
-      });
 
+        return currencies;
+      });
       // Fix that maxValue is determined on the *existing* points, and not the last one which will be removed
     }, 1000);
+
     return () => clearInterval(interval);
-  }, [graphSize, selectedCurrency, currencies]);
+  }, [graphSize, selectedCurrency, currencies, setCurrencies]);
 
   useEffect(() => {
     // const interval = setInterval(() => {
@@ -133,7 +133,7 @@ export const StockGraph = () => {
     .map((p) => `${p.pos.x},${p.pos.y}`)
     .join(" ");
 
-  console.log(selectedCurrency);
+  // console.log(selectedPoints);
 
   return (
     <div
