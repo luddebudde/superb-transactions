@@ -1,10 +1,11 @@
 import { type ReactNode, useEffect, useState } from "react";
 import { random } from "../basic.tsx";
 import { pointCount } from "./stockGraph.tsx";
-import { CurrencyContext, useCurrency } from "./test.tsx";
+import { CurrencyContext, useCurrency } from "./currencyContext.tsx";
 import type { Vec2 } from "../main.tsx";
 
-type Currency = {
+export type Currency = {
+  type: string;
   id: number;
   label: string;
   points: {
@@ -14,10 +15,10 @@ type Currency = {
     color: string;
     value: number;
   }[];
-  yValues: yValue[];
+  yValues: axisValue[];
 };
 
-type yValue = {
+export type axisValue = {
   id: number;
   pos: Vec2;
   color: string;
@@ -31,14 +32,22 @@ interface CurrencyProviderProps {
 
 export const CurrencyProvider = ({ children }: CurrencyProviderProps) => {
   const [currencies, setCurrencies] = useState<Currency[]>([]);
-  const [selectedCurrency, setSelectedCurrency] = useState<Currency | null>([]);
+  const [selectedCurrency, setSelectedCurrency] = useState<Currency | null>({
+    type: "",
+    id: 0,
+    label: "",
+    points: [],
+    yValues: [],
+  });
+
   // const [points, setPoints] = useState(
   //
   // );
 
-  const createCurrency = (label: string) => {
+  const createCurrency = (label: string, type: string) => {
     const newCurrency: Currency = {
-      id: label,
+      type: type,
+      id: Math.random(),
       label,
       points: Array.from({ length: pointCount }, (_, i) => ({
         id: i,
@@ -47,7 +56,13 @@ export const CurrencyProvider = ({ children }: CurrencyProviderProps) => {
         color: "yellow",
         value: random(0, 5000),
       })),
-      yValues: [],
+      yValues: Array.from({ length: 5 }, (_, i) => ({
+        id: i,
+        pos: { x: 50 * i, y: 50 * i },
+        scale: 1,
+        color: "yellow",
+        value: random(0, 5000),
+      })),
     };
 
     // createLogger(label);
@@ -73,52 +88,71 @@ export const CurrencyProvider = ({ children }: CurrencyProviderProps) => {
 
 export const CurrencySelection = () => {
   // const [selectedCurrency, setSelectedCurrency] = useState("firstCoin");
-  const {
-    currencies,
-    createCurrency,
-    setCurrencies,
-    selectedCurrency,
-    setSelectedCurrency,
-  } = useCurrency();
+  const { currencies, createCurrency, selectedCurrency, setSelectedCurrency } =
+    useCurrency();
+
+  const [currencyType, setCurrencyType] = useState("crypto");
 
   useEffect(() => {
-    const initialCurrencies = ["first", "second"].map(
-      (label: string): Currency => ({
-        id: Math.random(),
-        label,
-        points: Array.from({ length: pointCount }, (_, i) => ({
-          id: Math.random(),
-          pos: { x: 50 * i, y: 50 * i },
-          scale: 1,
-          color: "yellow",
-          value: random(0, 5000),
-        })),
-        yValues: [],
-      }),
-
-      // createCurrency(label),
-    );
-
-    // console.log(initialCurrencies);
+    const initialCurrencies = ["first", "second"];
+    //     .map(
+    //   (label: string): Currency => ({
+    //     type: "crypto",
+    //     id: Math.random(),
+    //     label,
+    //     points: Array.from({ length: pointCount }, (_, i) => ({
+    //       id: Math.random(),
+    //       pos: { x: 50 * i, y: 50 * i },
+    //       scale: 1,
+    //       color: "yellow",
+    //       value: random(0, 5000),
+    //     })),
+    //     yValues: [],
+    //   }),
+    //
+    //   // createCurrency(label),
+    // );
 
     initialCurrencies.forEach((currency) => {
       // setCurrencies((prev) => [...prev, currency]);
-      createCurrency(currency.label);
+      createCurrency(currency, "crypto");
     });
-
-    // if (currencies.length > 0 && !selectedCurrency) {
-    //   setSelectedCurrency(currencies[0]);
-    // }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  const selectedCurrencies = currencies.filter((c) => {
+    return c.type === currencyType;
+  });
 
   // console.log(currencies);
 
   return (
     <div id={"stockSide"}>
       <div id={"currencySelection"} className="currencySelectionBar">
-        <button className={"currencySelection"}>STOCKS</button>
-        <button className={"currencySelection"}>SHARES</button>
-        <button className={"currencySelection"}>CRYPTO</button>
+        <button
+          className={"currencySelection"}
+          onClick={() => {
+            setCurrencyType("stocks");
+          }}
+        >
+          STOCKS
+        </button>
+        <button
+          className={"currencySelection"}
+          onClick={() => {
+            setCurrencyType("shares");
+          }}
+        >
+          SHARES
+        </button>
+        <button
+          className={"currencySelection"}
+          onClick={() => {
+            setCurrencyType("crypto");
+          }}
+        >
+          CRYPTO
+        </button>
         <button className={"currencySelection"}>!</button>
       </div>
       <div
@@ -134,7 +168,7 @@ export const CurrencySelection = () => {
           overflow: "auto",
         }}
       >
-        {currencies.map((c) => (
+        {selectedCurrencies.map((c) => (
           <button
             key={c.id}
             className={

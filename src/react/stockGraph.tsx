@@ -1,31 +1,28 @@
 import { useEffect, useRef, useState } from "react";
 import { convertPrefix, random, world } from "../basic.tsx";
-import { useCurrency } from "./test.tsx";
+import { useCurrency } from "./currencyContext.tsx";
+import type { axisValue } from "./currencySelection.tsx";
 
 export const pointCount = 21;
 
 export const StockGraph = () => {
   const graphRef = useRef<HTMLDivElement | null>(null);
   const [graphSize, setGraphSize] = useState({ width: 0, height: 0 });
-  // const [points, setPoints] = useState(
-  //   Array.from({ length: pointCount }, (_, i) => ({
-  //     id: i,
-  //     pos: {
-  //       x: 50 * i,
-  //       y: 50 * i,
-  //     },
-  //     scale: 1,
-  //     color: "yellow",
-  //     value: random(0, 5000),
-  //   })),
-  // );
-  const [xValues, setXValues] = useState([]);
+  const [xValues, setXValues] = useState<axisValue[]>([
+    {
+      id: 0,
+      pos: { x: 0, y: 0 },
+      color: "",
+      value: 0,
+      scale: 0,
+    },
+  ]);
   // const [yValues, setYValues] = useState([]);
   const { currencies, setCurrencies } = useCurrency();
   const { selectedCurrency } = useCurrency();
 
-  const selectedPoints = selectedCurrency.points ?? [];
-  const selectedYValues = selectedCurrency.yValues ?? [];
+  const selectedPoints = selectedCurrency!.points;
+  const selectedYValues = selectedCurrency!.yValues;
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -42,60 +39,81 @@ export const StockGraph = () => {
         currencies.forEach((currency) => {
           const maxValue = Math.max(...currency.points.map((p) => p.value));
 
-          currency.points.forEach((prevPoint) => {
-            const spacing = rect.width / (pointCount - 1);
-            const prevPoints = currency.points;
+          // currency.points.forEach((prevPoint) => {
+          const spacing = graphSize.width / pointCount;
+          const prevPoints = currency.points;
 
-            const previousValue: number =
-              prevPoints[prevPoints.length - 1].value;
-            const newValue = previousValue * random(0.6, 1.4, false);
+          const previousValue: number = prevPoints[prevPoints.length - 1].value;
+          const newValue = previousValue * random(0.8, 1.2, false);
 
-            const newPoint = {
-              id: prevPoints[prevPoints.length - 1].id + 1,
-              pos: {
-                y:
-                  rect.height -
-                  rect.height * (previousValue / Math.max(newValue, maxValue)),
-                x: 0,
-              },
-              value: newValue,
-            };
+          const newPoint = {
+            id: prevPoints[prevPoints.length - 1].id + 1,
+            pos: {
+              y:
+                rect.height -
+                rect.height * (previousValue / Math.max(newValue, maxValue)),
+              x: graphSize.width,
+            },
+            color: "yellow",
+            scale: 1,
+            value: newValue,
+          };
 
-            // prevPoints.push(newPoint);
+          prevPoints.push(newPoint);
 
-            console.log(prevPoints[prevPoints.length - 1].id, newPoint);
+          // Make maxValue dependent on the y-position formula even here
+          // prevPoints.slice(0);
+          currency.points = prevPoints.slice(1).map((p, i) => ({
+            ...p,
+            pos: {
+              y:
+                rect.height -
+                rect.height * (p.value / Math.max(newValue, maxValue)),
+              x: p.pos.x - spacing * Math.min(1, pointCount - i - 1),
+            },
+          }));
 
-            // Make maxValue dependent on the y-position formula even here
-            return prevPoints.slice(1).map((p, i) => ({
-              ...p,
-              id: i,
-              pos: {
-                y:
-                  rect.height -
-                  rect.height * (p.value / Math.max(newValue, maxValue)),
-                x: p.pos.x - spacing,
-              },
-              value: p.value,
-            }));
-          });
+          // currency.points.push(newPoint);
+          // });
 
-          currency.yValues.forEach(() => {
-            const spacing = rect.height / 5;
-            return Array.from({ length: 5 }, (_, i) => ({
-              id: i,
-              pos: {
-                x: 0,
-                y: spacing * i,
-              },
-              scale: 1,
-              color: "black",
-              value: maxValue / (i + 1),
-            }));
-          });
+          // console.log(currency.id, currency.points);
+
+          // console.log(currency.yValues);
+          // currency.yValues.forEach((yValue, i) => {
+
+          const ySpacing = rect.height / 5;
+          currency.yValues = Array.from({ length: 5 }, (_, i) => ({
+            id: i,
+            pos: {
+              x: 0,
+              y: ySpacing * i,
+            },
+            scale: 1,
+            color: "black",
+            value: Math.max(maxValue, newValue) / (i + 1),
+          }));
+          // });
         });
 
         return currencies;
       });
+      const spacing = rect.width / (pointCount - 1);
+
+      const newXValues: axisValue[] = Array.from(
+        { length: pointCount },
+        (_, i) => ({
+          id: i,
+          pos: {
+            x: rect.width - spacing * i,
+            y: 0,
+          },
+          scale: 1,
+          color: "black",
+          value: i,
+        }),
+      );
+
+      setXValues(newXValues);
       // Fix that maxValue is determined on the *existing* points, and not the last one which will be removed
     }, 1000);
 
@@ -112,28 +130,11 @@ export const StockGraph = () => {
       width: rect.width,
       height: rect.height,
     });
-
-    setXValues(() => {
-      const spacing = rect.width / (pointCount - 1);
-
-      return Array.from({ length: pointCount }, (_, i) => ({
-        id: i,
-        pos: {
-          x: rect.width - spacing * i,
-          y: 0,
-        },
-        scale: 1,
-        color: "black",
-        value: i,
-      }));
-    });
   }, []);
 
   const linePoints = selectedPoints
     .map((p) => `${p.pos.x},${p.pos.y}`)
     .join(" ");
-
-  // console.log(selectedPoints);
 
   return (
     <div

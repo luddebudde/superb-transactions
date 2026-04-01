@@ -8,7 +8,7 @@ export const random = (minValue: number, maxValue: number, round = false) => {
   return round ? Math.round(number) : number;
 };
 
-export const convertPrefix: string = (value: number) => {
+export const convertPrefix = (value: number): string => {
   const prefixes = ["", "k", "m", "b", "t", "q"];
   const stringified = JSON.stringify(Math.round(value));
 
@@ -16,4 +16,8 @@ export const convertPrefix: string = (value: number) => {
   const selectedPrefix = prefixes[Math.floor(stringified.length / 3)];
 
   return stringified.concat(selectedPrefix);
+};
+
+export const lastElement = (array: []) => {
+  return array[array.length - 1];
 };
