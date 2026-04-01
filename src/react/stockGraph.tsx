@@ -97,7 +97,7 @@ export const StockGraph = () => {
 
         return currencies;
       });
-      const spacing = rect.width / (pointCount - 1);
+      const spacing = rect.width / pointCount;
 
       const newXValues: axisValue[] = Array.from(
         { length: pointCount },

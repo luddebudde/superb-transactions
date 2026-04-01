@@ -8,6 +8,7 @@ export type Currency = {
   type: string;
   id: number;
   label: string;
+  owned: number;
   points: {
     id: number;
     pos: Vec2;
@@ -36,6 +37,7 @@ export const CurrencyProvider = ({ children }: CurrencyProviderProps) => {
     type: "",
     id: 0,
     label: "",
+    owned: 0,
     points: [],
     yValues: [],
   });
@@ -49,6 +51,7 @@ export const CurrencyProvider = ({ children }: CurrencyProviderProps) => {
       type: type,
       id: Math.random(),
       label,
+      owned: 0,
       points: Array.from({ length: pointCount }, (_, i) => ({
         id: i,
         pos: { x: 50 * i, y: 50 * i },
@@ -179,6 +182,8 @@ export const CurrencySelection = () => {
             }}
           >
             {c.label}
+            {"          owned: "}
+            {c.owned}
           </button>
         ))}
       </div>

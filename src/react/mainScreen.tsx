@@ -36,9 +36,9 @@ export const MainScreen = ({ setCurrentMenu }: Props) => {
         <CurrencyProvider>
           <CurrencySelection></CurrencySelection>
           <StockGraph></StockGraph>
+          <TransactionArea></TransactionArea>
         </CurrencyProvider>
 
-        <TransactionArea></TransactionArea>
         <div
           id={"inter-diplomacy"}
           style={{
