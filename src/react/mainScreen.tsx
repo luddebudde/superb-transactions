@@ -1,6 +1,7 @@
 import { StockGraph } from "./stockGraph.tsx";
 import { TransactionArea } from "./transactionArea.tsx";
-import { CurrencyProvider, CurrencySelection } from "./currencySelection.tsx";
+import { CurrencyProvider } from "./currencyContext.tsx";
+import { CurrencySelection } from "./currencySelection.tsx";
 
 export type Props = {
   setCurrentMenu: React.Dispatch<React.SetStateAction<"main" | "bank">>;
@@ -33,11 +34,11 @@ export const MainScreen = ({ setCurrentMenu }: Props) => {
           overflow: "hidden",
         }}
       >
-        <CurrencyProvider>
-          <CurrencySelection></CurrencySelection>
-          <StockGraph></StockGraph>
-          <TransactionArea></TransactionArea>
-        </CurrencyProvider>
+        {/*<CurrencyProvider>*/}
+        <CurrencySelection></CurrencySelection>
+        <StockGraph></StockGraph>
+        <TransactionArea></TransactionArea>
+        {/*</CurrencyProvider>*/}
 
         <div
           id={"inter-diplomacy"}

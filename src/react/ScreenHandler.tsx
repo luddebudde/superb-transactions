@@ -10,5 +10,19 @@ export const ScreenHandler = () => {
     main: <MainScreen setCurrentMenu={setCurrentMenu} />,
     bank: <BankScreen setCurrentMenu={setCurrentMenu} />,
   };
-  return <>{screens[currentMenu]}</>;
+  return (
+    <>
+      <div
+        style={{ visibility: currentMenu === "main" ? "visible" : "hidden" }}
+      >
+        <MainScreen setCurrentMenu={setCurrentMenu} />
+      </div>
+
+      <div
+        style={{ visibility: currentMenu === "bank" ? "visible" : "hidden" }}
+      >
+        <BankScreen setCurrentMenu={setCurrentMenu} />
+      </div>
+    </>
+  );
 };

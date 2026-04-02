@@ -1,7 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { convertPrefix, random, world } from "../basic.tsx";
-import { useCurrency } from "./currencyContext.tsx";
-import type { axisValue } from "./currencySelection.tsx";
+import { type axisValue, useCurrency } from "./currencyContext.tsx";
 
 export const pointCount = 21;
 
@@ -18,8 +17,7 @@ export const StockGraph = () => {
     },
   ]);
   // const [yValues, setYValues] = useState([]);
-  const { currencies, setCurrencies } = useCurrency();
-  const { selectedCurrency } = useCurrency();
+  const { currencies, setCurrencies, selectedCurrency } = useCurrency();
 
   const selectedPoints = selectedCurrency!.points;
   const selectedYValues = selectedCurrency!.yValues;
@@ -62,7 +60,6 @@ export const StockGraph = () => {
           prevPoints.push(newPoint);
 
           // Make maxValue dependent on the y-position formula even here
-          // prevPoints.slice(0);
           currency.points = prevPoints.slice(1).map((p, i) => ({
             ...p,
             pos: {
@@ -73,13 +70,18 @@ export const StockGraph = () => {
             },
           }));
 
-          // currency.points.push(newPoint);
-          // });
+          // Update visuals to actually show when averageSpending is zero
+          currency.averageSpending =
+            currency.owned === 0 ? 0 : currency.averageSpending;
+          console.log(currency.owned, currency.averageSpending);
 
-          // console.log(currency.id, currency.points);
-
-          // console.log(currency.yValues);
-          // currency.yValues.forEach((yValue, i) => {
+          currency.averageSpendingLine = {
+            x: 0,
+            y:
+              rect.height -
+              rect.height *
+                (currency.averageSpending / Math.max(newValue, maxValue)),
+          };
 
           const ySpacing = rect.height / 5;
           currency.yValues = Array.from({ length: 5 }, (_, i) => ({
@@ -90,9 +92,8 @@ export const StockGraph = () => {
             },
             scale: 1,
             color: "black",
-            value: Math.max(maxValue, newValue) / (i + 1),
+            value: (Math.max(maxValue, newValue) / 5) * (5 - i),
           }));
-          // });
         });
 
         return currencies;
@@ -114,14 +115,12 @@ export const StockGraph = () => {
       );
 
       setXValues(newXValues);
-      // Fix that maxValue is determined on the *existing* points, and not the last one which will be removed
     }, 1000);
 
     return () => clearInterval(interval);
   }, [graphSize, selectedCurrency, currencies, setCurrencies]);
 
   useEffect(() => {
-    // const interval = setInterval(() => {
     if (!graphRef.current) return;
 
     const rect = graphRef.current.getBoundingClientRect();
@@ -194,6 +193,27 @@ export const StockGraph = () => {
           {p.id}
         </div>
       ))}
+      <div>
+        <div
+          key={"averageSpendingLine"}
+          style={{
+            position: "absolute",
+            top: selectedCurrency.averageSpendingLine.y,
+            left: 0,
+            color: "black",
+            backgroundColor: "brown",
+            width: "100%",
+            height: "1.5vh",
+            fontSize: "150%",
+            textAlign: "center",
+            opacity: 0.9,
+            transform: "translate(0%, 100%)",
+          }}
+          className="graphPoint"
+        >
+          {Math.round(selectedCurrency?.averageSpending)}
+        </div>
+      </div>
       {selectedYValues.map((p) => (
         <div>
           <div

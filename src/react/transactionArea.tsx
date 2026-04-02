@@ -1,14 +1,17 @@
-import { useEffect, useRef, useState } from "react";
+import { useState } from "react";
 import { useCurrency } from "./currencyContext.tsx";
-import { lastElement } from "../basic.tsx";
-import { buy, buyCurrency } from "../handleMoney.ts";
-import type { Currency } from "./currencySelection.tsx";
 
 export const TransactionArea = () => {
-  const { currencies, setCurrencies, selectedCurrency, setSelectedCurrency } =
-    useCurrency();
-  const graphRef = useRef<HTMLDivElement | null>(null);
-  const [areaSize, setAreaSize] = useState({ width: 0, height: 0 });
+  const {
+    currencies,
+    setCurrencies,
+    selectedCurrency,
+    setSelectedCurrency,
+    money,
+    setMoney,
+    buyCurrency,
+    sellCurrency,
+  } = useCurrency();
 
   const [customBuyAmount, setCustomBuyAmount] = useState(0);
   const [customSellAmount, setCustomSellAmount] = useState(0);
@@ -17,19 +20,6 @@ export const TransactionArea = () => {
   const [autoSellStatus, setAutoSellStatus] = useState(false);
   const [autoBuyValue, useAutoBuyValue] = useState(5);
   const [autoSellValue, useAutoSellValue] = useState(0);
-
-  const [money, setMoney] = useState(10000);
-
-  useEffect(() => {
-    if (!graphRef.current) return;
-
-    const rect = graphRef.current.getBoundingClientRect();
-
-    setAreaSize({
-      width: rect.width,
-      height: rect.height,
-    });
-  });
 
   // const buyCurrency = (selectedCurrency: Currency, amount) => {
   //
@@ -62,58 +52,25 @@ export const TransactionArea = () => {
         <button
           id={"1"}
           className={"transactionBuyButton"}
-          onClick={() =>
-            buyCurrency(
-              money,
-              setMoney,
-              selectedCurrency,
-              setSelectedCurrency,
-              setCurrencies,
-              1,
-            )
-          }
+          onClick={() => buyCurrency(selectedCurrency, 1)}
         >
           Buy 1
         </button>
         <button
           className={"transactionBuyButton"}
-          onClick={() =>
-            buyCurrency(
-              money,
-              setMoney,
-              selectedCurrency,
-              setSelectedCurrency,
-              10,
-            )
-          }
+          onClick={() => buyCurrency(selectedCurrency, 10)}
         >
           Buy 10
         </button>
         <button
           className={"transactionBuyButton"}
-          onClick={() =>
-            buyCurrency(
-              money,
-              setMoney,
-              selectedCurrency,
-              setSelectedCurrency,
-              100,
-            )
-          }
+          onClick={() => buyCurrency(selectedCurrency, 100)}
         >
           Buy 100
         </button>
         <button
           className={"transactionBuyButton"}
-          onClick={() =>
-            buyCurrency(
-              money,
-              setMoney,
-              selectedCurrency,
-              setSelectedCurrency,
-              customBuyAmount,
-            )
-          }
+          // Add custom buy
         >
           Buy{" "}
           <input
@@ -138,9 +95,24 @@ export const TransactionArea = () => {
           height: "100%",
         }}
       >
-        <button className={"transactionSellButton"}>Sell 1</button>
-        <button className={"transactionSellButton"}>Sell 10</button>
-        <button className={"transactionSellButton"}>Sell 100</button>
+        <button
+          className={"transactionSellButton"}
+          onClick={() => sellCurrency(selectedCurrency, 1)}
+        >
+          Sell 1
+        </button>
+        <button
+          className={"transactionSellButton"}
+          onClick={() => sellCurrency(selectedCurrency, 10)}
+        >
+          Sell 10
+        </button>
+        <button
+          className={"transactionSellButton"}
+          onClick={() => sellCurrency(selectedCurrency, 100)}
+        >
+          Sell 100
+        </button>
         <button className={"transactionSellButton"}>
           Sell{" "}
           <input
@@ -153,6 +125,7 @@ export const TransactionArea = () => {
               scale: "1",
             }}
             onInput={() => {}}
+            // Add custom buy
           ></input>{" "}
           amount
         </button>
