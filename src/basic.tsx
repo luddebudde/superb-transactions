@@ -26,7 +26,7 @@ export const convertPrefix = (value: number): string => {
   return stringified.concat(selectedPrefix);
 };
 
-export const lastElement = (array: []): [] => {
+export const lastElement = (array: []): any => {
   return array[array.length - 1];
 };
 

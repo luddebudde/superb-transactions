@@ -18,6 +18,13 @@ export type Currency = {
     value: number;
   }[];
   yValues: axisValue[];
+
+  customBuyAmount: number;
+  customSellAmount: number;
+  autoBuyStatus: boolean;
+  autoSellStatus: boolean;
+  autoBuyAmount: number;
+  autoSellAmount: number;
 };
 export type axisValue = {
   id: number;
@@ -27,33 +34,40 @@ export type axisValue = {
   scale: number;
 };
 
+export const makeCurrency = (overrides: Partial<Currency> = {}): Currency => ({
+  type: "",
+  id: Math.random(),
+  label: "",
+  owned: 0,
+  averageSpending: 0,
+  averageSpendingLine: origo,
+  points: [],
+  yValues: [],
+  customBuyAmount: 0,
+  customSellAmount: 0,
+  autoBuyStatus: false,
+  autoSellStatus: false,
+  autoBuyAmount: 0,
+  autoSellAmount: 0,
+  ...overrides,
+});
+
 interface CurrencyProviderProps {
   children: ReactNode;
 }
 
 export const CurrencyProvider = ({ children }: CurrencyProviderProps) => {
   const [currencies, setCurrencies] = useState<Currency[]>([]);
-  const [selectedCurrency, setSelectedCurrency] = useState<Currency | null>({
-    type: "",
-    id: 0,
-    label: "",
-    owned: 0,
-    averageSpending: 0,
-    averageSpendingLine: origo,
-    points: [],
-    yValues: [],
-  });
+  const [selectedCurrency, setSelectedCurrency] = useState<Currency | null>(
+    null,
+  );
   const [currencyType, setCurrencyType] = useState<string>("crypto");
   const [money, setMoney] = useState(10000);
 
   const createCurrency = (label: string, type: string) => {
-    const newCurrency: Currency = {
-      type: type,
-      id: Math.random(),
+    const newCurrency: Currency = makeCurrency({
+      type,
       label,
-      owned: 0,
-      averageSpending: 0,
-      averageSpendingLine: origo,
       points: Array.from({ length: pointCount }, (_, i) => ({
         id: i,
         pos: { x: 50 * i, y: 50 * i },
@@ -68,20 +82,48 @@ export const CurrencyProvider = ({ children }: CurrencyProviderProps) => {
         color: "yellow",
         value: random(0, 5000),
       })),
-    };
+
+      customBuyAmount: 0,
+      customSellAmount: 0,
+      autoBuyStatus: false,
+      autoSellStatus: false,
+      autoBuyAmount: 0,
+      autoSellAmount: 0,
+    });
 
     // createLogger(label);
 
+    console.log(newCurrency);
     setSelectedCurrency(newCurrency);
     setCurrencies((prev) => [...prev, newCurrency]);
+  };
+
+  const updateCurrency = (
+    currency: Currency,
+    attribute: string,
+    replacement: string | number | boolean | Vec2,
+  ) => {
+    setCurrencies((prev) =>
+      prev.map((c) => {
+        if (c.id === currency.id) {
+          c = { ...c, [attribute]: replacement };
+          setSelectedCurrency(c);
+          return c;
+        } else {
+          return c;
+        }
+      }),
+    );
   };
 
   const buyCurrency = (currency: Currency, amount: number) => {
     const valuation = lastElement(currency.points).value;
     const purchaseAbleAmount = Math.min(Math.floor(money / valuation), amount);
 
+    if (!purchaseAbleAmount) return;
+
     // Add average value
-    const [newMoney, newAmount] = [
+    const [newMoney, buyableAmount] = [
       money - valuation * purchaseAbleAmount,
       purchaseAbleAmount,
     ];
@@ -92,17 +134,7 @@ export const CurrencyProvider = ({ children }: CurrencyProviderProps) => {
       (currency.owned + purchaseAbleAmount);
 
     setMoney(newMoney);
-    setCurrencies((prev) =>
-      prev.map((c) => {
-        if (c.id === selectedCurrency.id) {
-          c = { ...c, owned: c.owned + newAmount };
-          setSelectedCurrency(c);
-          return c;
-        } else {
-          return c;
-        }
-      }),
-    );
+    updateCurrency(currency, "owned", currency.owned + buyableAmount);
   };
 
   const sellCurrency = (currency: Currency, amount: number) => {
@@ -111,17 +143,7 @@ export const CurrencyProvider = ({ children }: CurrencyProviderProps) => {
 
     // Add tax depending on: sold money - average value
     setMoney(money + valuation * sellableAmount);
-    setCurrencies((prev) =>
-      prev.map((c) => {
-        if (c.id === selectedCurrency.id) {
-          c = { ...c, owned: c.owned - sellableAmount };
-          setSelectedCurrency(c);
-          return c;
-        } else {
-          return c;
-        }
-      }),
-    );
+    updateCurrency(currency, "owned", currency.owned - sellableAmount);
   };
 
   // Fix time pause when buying
@@ -130,6 +152,7 @@ export const CurrencyProvider = ({ children }: CurrencyProviderProps) => {
     <CurrencyContext.Provider
       value={{
         currencies,
+        updateCurrency,
         setCurrencies,
         createCurrency,
         selectedCurrency,
@@ -158,6 +181,11 @@ type CurrencyContextType = {
   setMoney: React.Dispatch<React.SetStateAction<number>>;
   buyCurrency: (currency: Currency, amount: number) => void;
   sellCurrency: (currency: Currency, amount: number) => void;
+  updateCurrency: (
+    currency: Currency,
+    attribute: string,
+    replacement: string | number | boolean | Vec2,
+  ) => void;
 };
 
 export const CurrencyContext = createContext<CurrencyContextType | null>(null);

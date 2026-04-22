@@ -80,7 +80,7 @@ export const CurrencySelection = () => {
             {"          owned: "}
             {c.owned}
             {"          spent: "}
-            {Math.round(c.averageSpending)}
+            {Math.round(c.averageSpending * c.owned)}
           </button>
         ))}
       </div>

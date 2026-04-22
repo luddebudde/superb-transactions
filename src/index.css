@@ -85,15 +85,15 @@ h1 {
   scale: 1.1 !important;
 }
 
+
 .transactionBuyButton {
   width: 50%;
   height: 50%;
   background-color: darkgreen;
   border-radius: 20%;
-text-decoration: none;
+  text-decoration: none;
   font-size: 125%;
   text-align: center;
-  onCli
 }
 
 .transactionBuyButton:hover {
@@ -118,7 +118,7 @@ text-decoration: none;
 
 .activateAutoTransactionButton {
   width: 50%;
-  height: 50%;
+  height: 100%;
   box-shadow: 0 0 purple;
   font-size: 200%;
 
@@ -137,9 +137,10 @@ text-decoration: none;
 
 .autoTransactionAmountButton {
   width: 50%;
-  height: 50%;
+  height: 100%;
   background-color: rebeccapurple;
   font-size: 150%;
+  text-align: center;
 }
 
 .autoTransactionAmountButton:hover {

@@ -19,8 +19,8 @@ export const StockGraph = () => {
   // const [yValues, setYValues] = useState([]);
   const { currencies, setCurrencies, selectedCurrency } = useCurrency();
 
-  const selectedPoints = selectedCurrency!.points;
-  const selectedYValues = selectedCurrency!.yValues;
+  const selectedPoints = selectedCurrency?.points ?? [];
+  const selectedYValues = selectedCurrency?.yValues ?? [];
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -134,6 +134,8 @@ export const StockGraph = () => {
   const linePoints = selectedPoints
     .map((p) => `${p.pos.x},${p.pos.y}`)
     .join(" ");
+
+  if (!selectedCurrency) return null;
 
   return (
     <div
