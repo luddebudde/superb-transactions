@@ -1,4 +1,4 @@
-import type { Props } from "./mainScreen.tsx";
+import type { Props } from "./mainScreen/mainScreen.tsx";
 
 export const BankScreen = ({ setCurrentMenu }: Props) => {
   return (

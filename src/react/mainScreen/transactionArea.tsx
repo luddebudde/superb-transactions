@@ -1,18 +1,8 @@
 import { useCurrency } from "./currencyContext.tsx";
-import { useState } from "react";
 
 export const TransactionArea = () => {
-  const {
-    currencies,
-    updateCurrency,
-    setCurrencies,
-    selectedCurrency,
-    setSelectedCurrency,
-    money,
-    setMoney,
-    buyCurrency,
-    sellCurrency,
-  } = useCurrency();
+  const { updateCurrency, selectedCurrency, buyCurrency, sellCurrency } =
+    useCurrency();
 
   if (selectedCurrency === null) return;
   return (
@@ -184,7 +174,7 @@ export const TransactionArea = () => {
               updateCurrency(
                 selectedCurrency,
                 "autoBuyStatus",
-                !selectedCurrency?.autoBuyStatus,
+                !selectedCurrency.autoBuyStatus,
               );
             }}
           >
@@ -202,7 +192,7 @@ export const TransactionArea = () => {
               updateCurrency(
                 selectedCurrency,
                 "autoSellStatus",
-                !selectedCurrency?.autoSellStatus,
+                !selectedCurrency.autoSellStatus,
               );
             }}
           >
@@ -210,7 +200,7 @@ export const TransactionArea = () => {
           </button>
         </div>
         <div style={{ display: "flex", flexDirection: "row", flex: 1 }}>
-          <div className={"autoTransactionAmountButton"} style={{ flex: 1 }}>
+          <div className={"autoTransactionThresholdButton"} style={{ flex: 1 }}>
             <button
               style={{
                 width: "100%",
@@ -224,17 +214,18 @@ export const TransactionArea = () => {
             <input
               type={"number"}
               style={{ width: "30%", outline: "none", scale: "1.25" }}
+              value={selectedCurrency.autoBuyThreshold}
               onChange={(e) =>
                 updateCurrency(
                   selectedCurrency,
-                  "autoBuyAmount",
+                  "autoBuyThreshold",
                   Number(e.currentTarget.value) || 0,
                 )
               }
             ></input>{" "}
           </div>
 
-          <div className={"autoTransactionAmountButton"} style={{ flex: 1 }}>
+          <div className={"autoTransactionThresholdButton"} style={{ flex: 1 }}>
             <button
               style={{
                 width: "100%",
@@ -248,10 +239,11 @@ export const TransactionArea = () => {
             <input
               type={"number"}
               style={{ width: "30%", outline: "none", scale: "1.25" }}
+              value={selectedCurrency.autoSellThreshold}
               onChange={(e) =>
                 updateCurrency(
                   selectedCurrency,
-                  "autoSellAmount",
+                  "autoSellThreshold",
                   Number(e.currentTarget.value) || 0,
                 )
               }

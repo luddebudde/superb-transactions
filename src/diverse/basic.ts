@@ -1,4 +1,4 @@
-import type { Vec2 } from "./main.tsx";
+import type { Vec2 } from "../main.tsx";
 
 export const world = {
   width: screen.width,
@@ -26,7 +26,7 @@ export const convertPrefix = (value: number): string => {
   return stringified.concat(selectedPrefix);
 };
 
-export const lastElement = (array: []): any => {
+export const lastElement = <T>(array: T[]): T => {
   return array[array.length - 1];
 };
 
@@ -34,3 +34,5 @@ export const origo: Vec2 = {
   x: 0,
   y: 0,
 };
+
+export const pointCount = 21;

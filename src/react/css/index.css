@@ -135,7 +135,7 @@ h1 {
 /*  background-color: green;*/
 /*}*/
 
-.autoTransactionAmountButton {
+.autoTransactionThresholdButton {
   width: 50%;
   height: 100%;
   background-color: rebeccapurple;
@@ -143,7 +143,7 @@ h1 {
   text-align: center;
 }
 
-.autoTransactionAmountButton:hover {
+.autoTransactionThresholdButton:hover {
   background-color: mediumpurple;
   scale: 1.1 !important;
 }

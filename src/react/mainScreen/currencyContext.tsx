@@ -1,7 +1,14 @@
 import { createContext, type ReactNode, useContext, useState } from "react";
-import type { Vec2 } from "../main.tsx";
-import { pointCount } from "./stockGraph.tsx";
-import { lastElement, origo, random } from "../basic.tsx";
+import type { Vec2 } from "../../main.tsx";
+import { lastElement, origo, pointCount, random } from "../../diverse/basic.ts";
+
+export type Point = {
+  id: number;
+  pos: Vec2;
+  scale: number;
+  color: string;
+  value: number;
+};
 
 export type Currency = {
   type: string;
@@ -10,21 +17,15 @@ export type Currency = {
   owned: number;
   averageSpending: number;
   averageSpendingLine: Vec2;
-  points: {
-    id: number;
-    pos: Vec2;
-    scale: number;
-    color: string;
-    value: number;
-  }[];
+  points: Point[];
   yValues: axisValue[];
 
   customBuyAmount: number;
   customSellAmount: number;
   autoBuyStatus: boolean;
   autoSellStatus: boolean;
-  autoBuyAmount: number;
-  autoSellAmount: number;
+  autoBuyThreshold: number;
+  autoSellThreshold: number;
 };
 export type axisValue = {
   id: number;
@@ -47,8 +48,8 @@ export const makeCurrency = (overrides: Partial<Currency> = {}): Currency => ({
   customSellAmount: 0,
   autoBuyStatus: false,
   autoSellStatus: false,
-  autoBuyAmount: 0,
-  autoSellAmount: 0,
+  autoBuyThreshold: 0,
+  autoSellThreshold: 0,
   ...overrides,
 });
 
@@ -87,8 +88,8 @@ export const CurrencyProvider = ({ children }: CurrencyProviderProps) => {
       customSellAmount: 0,
       autoBuyStatus: false,
       autoSellStatus: false,
-      autoBuyAmount: 0,
-      autoSellAmount: 0,
+      autoBuyThreshold: 0,
+      autoSellThreshold: 0,
     });
 
     // createLogger(label);
@@ -103,6 +104,7 @@ export const CurrencyProvider = ({ children }: CurrencyProviderProps) => {
     attribute: string,
     replacement: string | number | boolean | Vec2,
   ) => {
+    console.log(currency, attribute, replacement);
     setCurrencies((prev) =>
       prev.map((c) => {
         if (c.id === currency.id) {
@@ -118,32 +120,37 @@ export const CurrencyProvider = ({ children }: CurrencyProviderProps) => {
 
   const buyCurrency = (currency: Currency, amount: number) => {
     const valuation = lastElement(currency.points).value;
-    const purchaseAbleAmount = Math.min(Math.floor(money / valuation), amount);
 
-    if (!purchaseAbleAmount) return;
+    setMoney((prevMoney) => {
+      const purchaseAbleAmount = Math.min(
+        Math.floor(prevMoney / valuation),
+        amount,
+      );
+      if (!purchaseAbleAmount) return prevMoney;
 
-    // Add average value
-    const [newMoney, buyableAmount] = [
-      money - valuation * purchaseAbleAmount,
-      purchaseAbleAmount,
-    ];
+      currency.averageSpending =
+        (currency.averageSpending * currency.owned +
+          valuation * purchaseAbleAmount) /
+        (currency.owned + purchaseAbleAmount);
 
-    currency.averageSpending =
-      (currency.averageSpending * currency.owned +
-        valuation * purchaseAbleAmount) /
-      (currency.owned + purchaseAbleAmount);
-
-    setMoney(newMoney);
-    updateCurrency(currency, "owned", currency.owned + buyableAmount);
+      updateCurrency(currency, "owned", currency.owned + purchaseAbleAmount);
+      return prevMoney - valuation * purchaseAbleAmount;
+    });
   };
 
   const sellCurrency = (currency: Currency, amount: number) => {
     const valuation = lastElement(currency.points).value;
-    const sellableAmount = Math.min(amount, currency.owned);
 
-    // Add tax depending on: sold money - average value
-    setMoney(money + valuation * sellableAmount);
-    updateCurrency(currency, "owned", currency.owned - sellableAmount);
+    setMoney((prevMoney) => {
+      const sellableAmount = Math.min(amount, currency.owned);
+      if (!sellableAmount) return prevMoney;
+
+      const newOwned = currency.owned - sellableAmount;
+      currency.averageSpending = newOwned === 0 ? 0 : currency.averageSpending;
+
+      updateCurrency(currency, "owned", newOwned);
+      return prevMoney + valuation * sellableAmount;
+    });
   };
 
   // Fix time pause when buying

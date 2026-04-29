@@ -1,9 +1,8 @@
 // import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
-import "./index.css";
+import "./react/css/index.css";
 import { ScreenHandler } from "./react/ScreenHandler.tsx";
-
-import { CurrencyProvider } from "./react/currencyContext.tsx";
+import { CurrencyProvider } from "./react/mainScreen/currencyContext.tsx";
 
 export type Vec2 = {
   x: number;
