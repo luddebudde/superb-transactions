@@ -7,33 +7,39 @@ import {
 import { handleAutoTransaction } from "./handleAutoTransaction.ts";
 import { calculateNewPoint } from "./calculateNewPoint.ts";
 import { changeCryptoDrift } from "../priceDriver.ts";
+import { people } from "./people.ts";
 
 export let dayCount = 1;
 
-export const useGameLoop = (
+export const dayLoop = (
   graphRef: React.RefObject<HTMLDivElement | null>,
-  intervalMs = 750,
+  intervalMs = 40,
 ): { graphSize: { width: number; height: number }; xValues: axisValue[] } => {
   const [graphSize, setGraphSize] = useState({ width: 0, height: 0 });
   const [xValues, setXValues] = useState<axisValue[]>([
     { id: 0, pos: { x: 0, y: 0 }, color: "", value: 0, scale: 0 },
   ]);
+  const returnElements = { graphSize, xValues };
 
-  const { setCurrencies, buyCurrency, sellCurrency } = useCurrency();
+  const {
+    setCurrencies,
+    buyCurrency,
+    sellCurrency,
+    player,
+    setPlayer,
+    selectedCurrency,
+  } = useCurrency();
 
-  // Keep buyCurrency in a ref so the stable interval always calls the latest version
+  // Keep latest values in refs so the stable interval always sees current data
   const buyCurrencyRef = useRef(buyCurrency);
   const sellCurrencyRef = useRef(sellCurrency);
+  const playerRef = useRef(player);
   useEffect(() => {
     buyCurrencyRef.current = buyCurrency;
     sellCurrencyRef.current = sellCurrency;
-  }, [buyCurrency, sellCurrency]);
+    playerRef.current = player;
+  }, [buyCurrency, sellCurrency, player]);
 
-  // Stable interval — never recreated because:
-  //   • setCurrencies (useState setter) is guaranteed stable by React
-  //   • setGraphSize / setXValues are also stable setters
-  //   • we use functional update (prev =>) so we never read stale state
-  //   • graphRef is a ref, so always has the latest DOM node
   useEffect(() => {
     const interval = setInterval(() => {
       if (!graphRef.current) return;
@@ -43,11 +49,17 @@ export const useGameLoop = (
 
       const spacing = rect.width / pointCount;
 
+      // Capture per-currency computed values to update player state after
+      const lineData: Record<string, { newValue: number; maxValue: number }> =
+        {};
+
+      // buyCurrency(selectedCurrency, 1, people[0]);
+
       setCurrencies((prev) => {
         prev.forEach((currency) => {
           const maxValue = Math.max(...currency.points.map((p) => p.value));
 
-          if (!(dayCount % 21)) {
+          if (!(dayCount % 28)) {
             changeCryptoDrift();
           }
 
@@ -61,21 +73,17 @@ export const useGameLoop = (
 
           // Auto buying and selling
           const newValue = lastElement(currency.points).value;
+          const pc = playerRef.current.currencies[currency.label];
           handleAutoTransaction(
             currency,
+            pc,
             newValue,
             buyCurrencyRef,
             sellCurrencyRef,
           );
 
-          // Showing average spending
-          currency.averageSpendingLine = {
-            x: 0,
-            y:
-              rect.height -
-              rect.height *
-                (currency.averageSpending / Math.max(newValue, maxValue)),
-          };
+          // Store so setPlayer below can compute averageSpendingLine
+          lineData[currency.label as string] = { newValue, maxValue };
 
           //Y spaces
           const ySpacing = rect.height / 5;
@@ -88,8 +96,28 @@ export const useGameLoop = (
           }));
         });
 
-        // Returning points to update
         return [...prev];
+      });
+
+      // Immutably update averageSpendingLine in player for each currency
+      setPlayer((prev) => {
+        const updatedCurrencies = { ...prev.currencies };
+
+        Object.entries(lineData).forEach(([idStr, { newValue, maxValue }]) => {
+          const pc = updatedCurrencies[idStr];
+          if (!pc) return;
+          updatedCurrencies[idStr] = {
+            ...pc,
+            averageSpendingLine: {
+              x: 0,
+              y:
+                rect.height -
+                rect.height *
+                  (pc.averageSpending / Math.max(newValue, maxValue)),
+            },
+          };
+        });
+        return { ...prev, currencies: updatedCurrencies };
       });
 
       setXValues(
@@ -101,11 +129,11 @@ export const useGameLoop = (
           value: i,
         })),
       );
-      dayCount++;
+      dayCount += 0.25;
     }, intervalMs);
 
     return () => clearInterval(interval);
   }, []);
 
-  return { graphSize, xValues };
+  return returnElements;
 };

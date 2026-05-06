@@ -10,16 +10,19 @@ export type Point = {
   value: number;
 };
 
+// Market data only — no player-specific fields
 export type Currency = {
   type: string;
-  id: number;
   label: string;
+  points: Point[];
+  yValues: axisValue[];
+};
+
+// Per-currency ownership data for a player
+export type PlayerCurrency = {
   owned: number;
   averageSpending: number;
   averageSpendingLine: Vec2;
-  points: Point[];
-  yValues: axisValue[];
-
   customBuyAmount: number;
   customSellAmount: number;
   autoBuyStatus: boolean;
@@ -27,6 +30,13 @@ export type Currency = {
   autoBuyThreshold: number;
   autoSellThreshold: number;
 };
+
+// A player object holding money and all per-currency data
+export type Player = {
+  money: number;
+  currencies: Record<string, PlayerCurrency>;
+};
+
 export type axisValue = {
   id: number;
   pos: Vec2;
@@ -35,21 +45,23 @@ export type axisValue = {
   scale: number;
 };
 
-export const makeCurrency = (overrides: Partial<Currency> = {}): Currency => ({
-  type: "",
-  id: Math.random(),
-  label: "",
+export const makePlayerCurrency = (): PlayerCurrency => ({
   owned: 0,
   averageSpending: 0,
   averageSpendingLine: origo,
-  points: [],
-  yValues: [],
   customBuyAmount: 0,
   customSellAmount: 0,
   autoBuyStatus: false,
   autoSellStatus: false,
   autoBuyThreshold: 0,
   autoSellThreshold: 0,
+});
+
+export const makeCurrency = (overrides: Partial<Currency> = {}): Currency => ({
+  type: "",
+  label: "",
+  points: [],
+  yValues: [],
   ...overrides,
 });
 
@@ -63,7 +75,10 @@ export const CurrencyProvider = ({ children }: CurrencyProviderProps) => {
     null,
   );
   const [currencyType, setCurrencyType] = useState<string>("crypto");
-  const [money, setMoney] = useState(10000);
+  const [player, setPlayer] = useState<Player>({
+    money: 10000000,
+    currencies: {},
+  });
 
   const createCurrency = (label: string, type: string) => {
     const newCurrency: Currency = makeCurrency({
@@ -83,91 +98,136 @@ export const CurrencyProvider = ({ children }: CurrencyProviderProps) => {
         color: "yellow",
         value: random(0, 5000),
       })),
-
-      customBuyAmount: 0,
-      customSellAmount: 0,
-      autoBuyStatus: false,
-      autoSellStatus: false,
-      autoBuyThreshold: 0,
-      autoSellThreshold: 0,
     });
 
-    // createLogger(label);
-
-    console.log(newCurrency);
     setSelectedCurrency(newCurrency);
     setCurrencies((prev) => [...prev, newCurrency]);
+    // Create a fresh PlayerCurrency entry for this currency
+    setPlayer((prev) => ({
+      ...prev,
+      currencies: {
+        ...prev.currencies,
+        [newCurrency.label]: makePlayerCurrency(),
+      },
+    }));
   };
 
   const updateCurrency = (
     currency: Currency,
-    attribute: string,
+    attribute: keyof Currency,
     replacement: string | number | boolean | Vec2,
   ) => {
-    console.log(currency, attribute, replacement);
     setCurrencies((prev) =>
       prev.map((c) => {
-        if (c.id === currency.id) {
+        if (c.label === currency.label) {
           c = { ...c, [attribute]: replacement };
           setSelectedCurrency(c);
           return c;
-        } else {
-          return c;
         }
+        return c;
       }),
     );
   };
 
-  const buyCurrency = (currency: Currency, amount: number) => {
-    const valuation = lastElement(currency.points).value;
+  // Update a player-owned field (owned, averageSpending, autoBuy*, etc.)
+  const updatePlayerCurrency = (
+    currencyLabel: string,
+    attribute: keyof PlayerCurrency,
+    replacement: PlayerCurrency[keyof PlayerCurrency],
+  ) => {
+    setPlayer((prev) => ({
+      ...prev,
+      currencies: {
+        ...prev.currencies,
+        [currencyLabel]: {
+          ...prev.currencies[currencyLabel],
+          [attribute]: replacement,
+        },
+      },
+    }));
+  };
 
-    setMoney((prevMoney) => {
-      const purchaseAbleAmount = Math.min(
-        Math.floor(prevMoney / valuation),
+  const buyCurrency = (currency: Currency, amount: number, buyer) => {
+    const valuation = lastElement(currency.points).value;
+    // console.log(buyer);
+    if (buyer !== player) {
+      const purchasableAmount = Math.min(
+        Math.floor(buyer.money / valuation),
         amount,
       );
-      if (!purchaseAbleAmount) return prevMoney;
+      if (!purchasableAmount) {
+        throw reportError("Buyer cannot afford any amount of this currency");
+      }
 
-      currency.averageSpending =
-        (currency.averageSpending * currency.owned +
-          valuation * purchaseAbleAmount) /
-        (currency.owned + purchaseAbleAmount);
+      const buyerCurrency = buyer.currencies[currency.label];
+      buyer.money -= valuation * purchasableAmount;
+      buyerCurrency.owned += purchasableAmount;
+    }
+    setPlayer(() => {
+      console.log(buyer);
+      const pc = buyer.currencies[currency.label];
+      if (!pc) return buyer;
+      const purchasableAmount = Math.min(
+        Math.floor(buyer.money / valuation),
+        amount,
+      );
 
-      updateCurrency(currency, "owned", currency.owned + purchaseAbleAmount);
-      return prevMoney - valuation * purchaseAbleAmount;
+      if (!purchasableAmount) return buyer;
+      const newAverageSpending =
+        (pc.averageSpending * pc.owned + valuation * purchasableAmount) /
+        (pc.owned + purchasableAmount);
+      return {
+        ...buyer,
+        money: buyer.money - valuation * purchasableAmount,
+        currencies: {
+          ...buyer.currencies,
+          [currency.label]: {
+            ...pc,
+            owned: pc.owned + purchasableAmount,
+            averageSpending: newAverageSpending,
+          },
+        },
+      };
     });
   };
 
-  const sellCurrency = (currency: Currency, amount: number) => {
+  const sellCurrency = (currency: Currency, amount: number, buyer) => {
     const valuation = lastElement(currency.points).value;
-
-    setMoney((prevMoney) => {
-      const sellableAmount = Math.min(amount, currency.owned);
-      if (!sellableAmount) return prevMoney;
-
-      const newOwned = currency.owned - sellableAmount;
-      currency.averageSpending = newOwned === 0 ? 0 : currency.averageSpending;
-
-      updateCurrency(currency, "owned", newOwned);
-      return prevMoney + valuation * sellableAmount;
+    setPlayer((prev) => {
+      const pc = prev.currencies[currency.label];
+      if (!pc) return prev;
+      const sellableAmount = Math.min(amount, pc.owned);
+      if (!sellableAmount) return prev;
+      const newOwned = pc.owned - sellableAmount;
+      return {
+        ...prev,
+        money: prev.money + valuation * sellableAmount,
+        currencies: {
+          ...prev.currencies,
+          [currency.label]: {
+            ...pc,
+            owned: newOwned,
+            averageSpending: newOwned === 0 ? 0 : pc.averageSpending,
+          },
+        },
+      };
     });
   };
-
-  // Fix time pause when buying
 
   return (
     <CurrencyContext.Provider
       value={{
         currencies,
         updateCurrency,
+        updatePlayerCurrency,
         setCurrencies,
         createCurrency,
         selectedCurrency,
         setSelectedCurrency,
         currencyType,
         setCurrencyType,
-        money,
-        setMoney,
+        player,
+        setPlayer,
         buyCurrency,
         sellCurrency,
       }}
@@ -176,6 +236,7 @@ export const CurrencyProvider = ({ children }: CurrencyProviderProps) => {
     </CurrencyContext.Provider>
   );
 };
+
 type CurrencyContextType = {
   currencies: Currency[];
   setCurrencies: React.Dispatch<React.SetStateAction<Currency[]>>;
@@ -184,14 +245,19 @@ type CurrencyContextType = {
   setSelectedCurrency: React.Dispatch<React.SetStateAction<Currency | null>>;
   currencyType: string;
   setCurrencyType: React.Dispatch<React.SetStateAction<string>>;
-  money: number;
-  setMoney: React.Dispatch<React.SetStateAction<number>>;
-  buyCurrency: (currency: Currency, amount: number) => void;
-  sellCurrency: (currency: Currency, amount: number) => void;
+  player: Player;
+  setPlayer: React.Dispatch<React.SetStateAction<Player>>;
+  buyCurrency: (currency: Currency, amount: number, buyer) => void;
+  sellCurrency: (currency: Currency, amount: number, buyer) => void;
   updateCurrency: (
     currency: Currency,
-    attribute: string,
+    attribute: keyof Currency,
     replacement: string | number | boolean | Vec2,
+  ) => void;
+  updatePlayerCurrency: (
+    currencyLabel: string,
+    attribute: keyof PlayerCurrency,
+    replacement: PlayerCurrency[keyof PlayerCurrency],
   ) => void;
 };
 

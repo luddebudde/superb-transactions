@@ -1,10 +1,18 @@
-import { useCurrency } from "./currencyContext.tsx";
+import { makePlayerCurrency, useCurrency } from "./currencyContext.tsx";
 
 export const TransactionArea = () => {
-  const { updateCurrency, selectedCurrency, buyCurrency, sellCurrency } =
-    useCurrency();
+  const {
+    updatePlayerCurrency,
+    selectedCurrency,
+    buyCurrency,
+    sellCurrency,
+    player,
+  } = useCurrency();
 
   if (selectedCurrency === null) return;
+
+  const pc = player.currencies[selectedCurrency.label] ?? makePlayerCurrency();
+
   return (
     <div
       id={"transaction"}
@@ -34,21 +42,23 @@ export const TransactionArea = () => {
         <button
           id={"1"}
           className={"transactionBuyButton"}
-          onClick={() => buyCurrency(selectedCurrency, 1)}
+          onClick={() => {
+            buyCurrency(selectedCurrency, 1, player);
+          }}
         >
           Buy 1
         </button>
         {/*Buy 10*/}
         <button
           className={"transactionBuyButton"}
-          onClick={() => buyCurrency(selectedCurrency, 10)}
+          onClick={() => buyCurrency(selectedCurrency, 10, player)}
         >
           Buy 10
         </button>
         {/*Buy 100*/}
         <button
           className={"transactionBuyButton"}
-          onClick={() => buyCurrency(selectedCurrency, 100)}
+          onClick={() => buyCurrency(selectedCurrency, 100, player)}
         >
           Buy 100
         </button>
@@ -62,7 +72,7 @@ export const TransactionArea = () => {
               borderRadius: "20%",
             }}
             onClick={() => {
-              buyCurrency(selectedCurrency, selectedCurrency.customBuyAmount);
+              buyCurrency(selectedCurrency, pc.customBuyAmount, player);
             }}
             // Add custom buy
           >
@@ -70,10 +80,10 @@ export const TransactionArea = () => {
           </button>
           <input
             type={"number"}
-            value={selectedCurrency.customBuyAmount}
+            value={pc.customBuyAmount}
             onChange={(e) =>
-              updateCurrency(
-                selectedCurrency,
+              updatePlayerCurrency(
+                selectedCurrency.label,
                 "customBuyAmount",
                 Number(e.currentTarget.value) || 0,
               )
@@ -100,21 +110,21 @@ export const TransactionArea = () => {
         {/*Sell 1*/}
         <button
           className={"transactionSellButton"}
-          onClick={() => sellCurrency(selectedCurrency, 1)}
+          onClick={() => sellCurrency(selectedCurrency, 1, player)}
         >
           Sell 1
         </button>
         {/*Sell 10*/}
         <button
           className={"transactionSellButton"}
-          onClick={() => sellCurrency(selectedCurrency, 10)}
+          onClick={() => sellCurrency(selectedCurrency, 10, player)}
         >
           Sell 10
         </button>
         {/*Sell 100*/}
         <button
           className={"transactionSellButton"}
-          onClick={() => sellCurrency(selectedCurrency, 100)}
+          onClick={() => sellCurrency(selectedCurrency, 100, player)}
         >
           Sell 100
         </button>
@@ -129,7 +139,7 @@ export const TransactionArea = () => {
               borderRadius: "20%",
             }}
             onClick={() => {
-              sellCurrency(selectedCurrency, selectedCurrency.customSellAmount);
+              sellCurrency(selectedCurrency, pc.customSellAmount, player);
             }}
             // Add custom buy
           >
@@ -137,10 +147,10 @@ export const TransactionArea = () => {
           </button>
           <input
             type={"number"}
-            value={selectedCurrency.customSellAmount}
+            value={pc.customSellAmount}
             onChange={(e) =>
-              updateCurrency(
-                selectedCurrency,
+              updatePlayerCurrency(
+                selectedCurrency.label,
                 "customSellAmount",
                 Number(e.currentTarget.value) || 0,
               )
@@ -167,14 +177,14 @@ export const TransactionArea = () => {
           <button
             className={"activateAutoTransactionButton"}
             style={{
-              backgroundColor: selectedCurrency.autoBuyStatus ? "green" : "red",
+              backgroundColor: pc.autoBuyStatus ? "green" : "red",
               flex: 1,
             }}
             onClick={() => {
-              updateCurrency(
-                selectedCurrency,
+              updatePlayerCurrency(
+                selectedCurrency.label,
                 "autoBuyStatus",
-                !selectedCurrency.autoBuyStatus,
+                !pc.autoBuyStatus,
               );
             }}
           >
@@ -183,16 +193,14 @@ export const TransactionArea = () => {
           <button
             className={"activateAutoTransactionButton"}
             style={{
-              backgroundColor: selectedCurrency.autoSellStatus
-                ? "green"
-                : "red",
+              backgroundColor: pc.autoSellStatus ? "green" : "red",
               flex: 1,
             }}
             onClick={() => {
-              updateCurrency(
-                selectedCurrency,
+              updatePlayerCurrency(
+                selectedCurrency.label,
                 "autoSellStatus",
-                !selectedCurrency.autoSellStatus,
+                !pc.autoSellStatus,
               );
             }}
           >
@@ -214,10 +222,10 @@ export const TransactionArea = () => {
             <input
               type={"number"}
               style={{ width: "30%", outline: "none", scale: "1.25" }}
-              value={selectedCurrency.autoBuyThreshold}
+              value={pc.autoBuyThreshold}
               onChange={(e) =>
-                updateCurrency(
-                  selectedCurrency,
+                updatePlayerCurrency(
+                  selectedCurrency.label,
                   "autoBuyThreshold",
                   Number(e.currentTarget.value) || 0,
                 )
@@ -239,10 +247,10 @@ export const TransactionArea = () => {
             <input
               type={"number"}
               style={{ width: "30%", outline: "none", scale: "1.25" }}
-              value={selectedCurrency.autoSellThreshold}
+              value={pc.autoSellThreshold}
               onChange={(e) =>
-                updateCurrency(
-                  selectedCurrency,
+                updatePlayerCurrency(
+                  selectedCurrency.label,
                   "autoSellThreshold",
                   Number(e.currentTarget.value) || 0,
                 )

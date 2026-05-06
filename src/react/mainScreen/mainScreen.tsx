@@ -1,6 +1,5 @@
 import { StockGraph } from "./stockGraph.tsx";
 import { TransactionArea } from "./transactionArea.tsx";
-import { CurrencyProvider } from "./currencyContext.tsx";
 import { CurrencySelection } from "./currencySelection.tsx";
 
 export type Props = {

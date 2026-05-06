@@ -14,7 +14,10 @@ export const calculateNewPoint = (
   const prevPoints: Point[] = currency.points;
   const previousValue = prevPoints[prevPoints.length - 1].value;
   const newValue =
-    previousValue * random(cryptoDrift.min, cryptoDrift.max, false);
+    // previousValue * random(cryptoDrift.min, cryptoDrift.max, false);
+    previousValue *
+    random(cryptoDrift.min, cryptoDrift.max, false) *
+    cryptoDrift.average;
 
   const newPoint = {
     id: prevPoints[prevPoints.length - 1].id + 1,

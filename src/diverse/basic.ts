@@ -35,4 +35,4 @@ export const origo: Vec2 = {
   y: 0,
 };
 
-export const pointCount = 21;
+export const pointCount = 63;

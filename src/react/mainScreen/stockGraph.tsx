@@ -1,15 +1,18 @@
 import { useRef } from "react";
 import { convertPrefix } from "../../diverse/basic.ts";
 import { useCurrency } from "./currencyContext.tsx";
-import { dayCount, useGameLoop } from "../../diverse/dayLoop/useGameLoop.tsx";
+import { dayCount, dayLoop } from "../../diverse/dayLoop/dayLoop.tsx";
 
 export const StockGraph = () => {
   const graphRef = useRef<HTMLDivElement | null>(null);
-  const { selectedCurrency, money } = useCurrency();
-  const { graphSize, xValues } = useGameLoop(graphRef);
+  const { selectedCurrency, player } = useCurrency();
+  const { graphSize, xValues } = dayLoop(graphRef);
 
   const selectedPoints = selectedCurrency?.points ?? [];
   const selectedYValues = selectedCurrency?.yValues ?? [];
+  const pc = selectedCurrency
+    ? player.currencies[selectedCurrency.label as string]
+    : null;
 
   const linePoints = selectedPoints
     .map((p) => `${p.pos.x},${p.pos.y}`)
@@ -79,7 +82,7 @@ export const StockGraph = () => {
           key={"averageSpendingLine"}
           style={{
             position: "absolute",
-            top: selectedCurrency.averageSpendingLine.y,
+            top: pc.averageSpendingLine.y,
             left: 0,
             color: "black",
             backgroundColor: "brown",
@@ -92,7 +95,7 @@ export const StockGraph = () => {
           }}
           className="graphPoint"
         >
-          {Math.round(selectedCurrency?.averageSpending)}
+          {Math.round(pc?.averageSpending ?? 0)}
         </div>
       </div>
       {selectedYValues.map((p) => (
@@ -144,7 +147,7 @@ export const StockGraph = () => {
             }}
           >
             Day: {dayCount}
-            Money: {Math.round(money)}
+            Money: {Math.round(player.money)}
           </div>
         </div>
       ))}

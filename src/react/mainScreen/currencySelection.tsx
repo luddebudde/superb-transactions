@@ -10,6 +10,7 @@ export const CurrencySelection = () => {
     setSelectedCurrency,
     currencyType,
     setCurrencyType,
+    player,
   } = useCurrency();
 
   useEffect(() => {
@@ -68,7 +69,7 @@ export const CurrencySelection = () => {
       >
         {selectedCurrencies.map((c) => (
           <button
-            key={c.id}
+            key={c.label}
             className={
               "currencyButton " + (selectedCurrency === c ? "active" : "")
             }
@@ -78,9 +79,13 @@ export const CurrencySelection = () => {
           >
             {c.label}
             {"          owned: "}
-            {c.owned}
+            {player.currencies[c.label]?.owned ?? 0}
             {"          spent: "}
-            {Math.round(c.averageSpending * c.owned)}
+            {Math.round(
+              (player.currencies[c.label]?.averageSpending ?? 0) *
+                (player.currencies[c.label]?.owned ?? 0),
+            )}
+            )
           </button>
         ))}
       </div>
