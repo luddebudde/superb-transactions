@@ -7,7 +7,6 @@ import {
 import { handleAutoTransaction } from "./handleAutoTransaction.ts";
 import { calculateNewPoint } from "./calculateNewPoint.ts";
 import { changeCryptoDrift } from "../priceDriver.ts";
-import { people } from "./people.ts";
 
 export let dayCount = 1;
 

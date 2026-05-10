@@ -158,10 +158,14 @@ h1 {
   text-align: left;
   font-size: 250%;
   opacity: 100%;
-
   padding-left: 3%
-
 }
+
+.wealthThresholdSlider {
+  width:100%;
+  margin-top: 10px;
+}
+
 
 .rightTab:hover {
   /*opacity: 0.5;*/

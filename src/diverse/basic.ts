@@ -30,6 +30,29 @@ export const lastElement = <T>(array: T[]): T => {
   return array[array.length - 1];
 };
 
+export const getArrayAverage = (
+  array: any[],
+  attribute: undefined | string = undefined,
+): number | string => {
+  if (attribute === undefined) {
+    const totalValue: number = array.reduce(
+      (element, p: number) => element + p,
+      0,
+    );
+    return totalValue / array.length;
+  } else {
+    const totalValue = array.reduce(
+      (element, p: any) => element + p[attribute],
+      0,
+    );
+    return totalValue / array.length;
+  }
+};
+
+export const sum = (array: any[], attribute: string): number => {
+  return array.reduce((sum, p) => sum + p[attribute], 0);
+};
+
 export const origo: Vec2 = {
   x: 0,
   y: 0,

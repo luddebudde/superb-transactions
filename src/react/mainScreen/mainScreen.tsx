@@ -67,6 +67,15 @@ export const MainScreen = ({ setCurrentMenu }: Props) => {
           >
             Bank
           </button>
+          <button
+            className={"rightTab"}
+            style={{ backgroundColor: "rgba(255, 240, 5, 1)" }}
+            onClick={() => {
+              setCurrentMenu("distribution");
+            }}
+          >
+            Wealth distribution
+          </button>
           <button className={"rightTab"} style={{ backgroundColor: "blue" }}>
             Government
           </button>
