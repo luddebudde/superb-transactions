@@ -2,11 +2,11 @@ import { StockGraph } from "./stockGraph.tsx";
 import { TransactionArea } from "./transactionArea.tsx";
 import { CurrencySelection } from "./currencySelection.tsx";
 
-export type Props = {
+export type MenuProp = {
   setCurrentMenu: React.Dispatch<React.SetStateAction<"main" | "bank">>;
 };
 
-export const MainScreen = ({ setCurrentMenu }: Props) => {
+export const MainScreen = ({ setCurrentMenu }: MenuProp) => {
   // const [isOpen, setIsOpen] = useState(false);
   // const [customBuyValue, setCustomBuyValue] = useState(0);
   // const [customSellValue, setCustomSellValue] = useState(0);

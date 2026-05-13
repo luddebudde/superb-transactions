@@ -1,12 +1,12 @@
 import { useRef } from "react";
 import { convertPrefix } from "../../diverse/basic.ts";
 import { useCurrency } from "./currencyContext.tsx";
-import { dayCount, dayLoop } from "../../diverse/dayLoop/dayLoop.tsx";
+import { dayCount, useDayLoop } from "../../diverse/dayLoop/dayLoop.tsx";
 
 export const StockGraph = () => {
   const graphRef = useRef<HTMLDivElement | null>(null);
   const { selectedCurrency, player } = useCurrency();
-  const { graphSize, xValues } = dayLoop(graphRef);
+  const { graphSize, xValues } = useDayLoop(graphRef);
 
   const selectedPoints = selectedCurrency?.points ?? [];
   const selectedYValues = selectedCurrency?.yValues ?? [];

@@ -1,6 +1,20 @@
-import type { Props } from "./mainScreen/mainScreen.tsx";
+import type { MenuProp } from "./mainScreen/mainScreen.tsx";
+import { useState } from "react";
+import { useCurrency } from "./mainScreen/currencyContext.tsx";
 
-export const BankScreen = ({ setCurrentMenu }: Props) => {
+export const BankScreen = ({ setCurrentMenu }: MenuProp) => {
+  const [takeLoanAmount, setTakeLoanAmount] = useState(0);
+  const [amortizeAmount, setAmortizeAmount] = useState(0);
+  const [depositAmount, setDepositAmount] = useState(0);
+  const [withdrawAmount, setWithdrawAmount] = useState(0);
+
+  const [loanHistory, setLoanHistory] = useState(0);
+  const [depositHistory, setDepositHistory] = useState(0);
+  const [interestAmount, setInterestAmount] = useState(0);
+  const [yieldAmount, setYieldAmount] = useState(0);
+
+  const { player, setPlayer } = useCurrency();
+
   return (
     <div
       id="bankScreen"
@@ -29,7 +43,7 @@ export const BankScreen = ({ setCurrentMenu }: Props) => {
           Deposited Money
         </div>
         <div
-          id={"positive interest"}
+          id={"yield interest"}
           className={"bankGraph"}
           style={{ color: "lime" }}
         >
@@ -63,25 +77,141 @@ export const BankScreen = ({ setCurrentMenu }: Props) => {
           <text
             style={{ textAlign: "center", fontSize: "100%", color: "yellow" }}
           >
-            MONEY
+            {player.money}
           </text>
         </text>
-        <button id={"loan"} className={"bankActions"}>
-          Take loan{" "}
-          <input className={"bankInput"} onInput={() => {}}></input>{" "}
-        </button>
-        <button id={"amortization"} className={"bankActions"}>
-          Amortize{" "}
-          <input className={"bankInput"} onInput={() => {}}></input>{" "}
-        </button>
-        <button id={"deposit"} className={"bankActions"}>
-          Deposit{" "}
-          <input className={"bankInput"} onInput={() => {}}></input>{" "}
-        </button>
-        <button id={"deposit"} className={"bankActions"}>
-          Withdraw{" "}
-          <input className={"bankInput"} onInput={() => {}}></input>{" "}
-        </button>
+
+        {/*// TAKE LOAN*/}
+        <div id={"loan"} className={"bankActions"}>
+          <button
+            className={"bankButton"}
+            onClick={() => {
+              setPlayer((p) => ({
+                ...p,
+                money: p.money + takeLoanAmount,
+                loanSize: p.loanSize + takeLoanAmount,
+              }));
+              setTakeLoanAmount(0);
+            }}
+          >
+            Take loan{" "}
+          </button>
+          <input
+            className={"bankInput"}
+            style={{ width: "15%", margin: "1%" }}
+            type={"number"}
+            value={takeLoanAmount}
+            onInput={(e) =>
+              setTakeLoanAmount(
+                Math.max(
+                  Math.min(
+                    Number(e.currentTarget.value),
+                    player.money - player.loanSize * 2,
+                  ),
+                  0,
+                ),
+              )
+            }
+          ></input>{" "}
+        </div>
+
+        {/*// MAKE AMORTIZATION*/}
+        <div id={"amortization"} className={"bankActions"}>
+          <button
+            className={"bankButton"}
+            onClick={() => {
+              const realAmortizeAmount = Math.min(amortizeAmount, player.money);
+              setPlayer((p) => ({
+                ...p,
+                money: p.money - realAmortizeAmount,
+                loanSize: p.loanSize - realAmortizeAmount,
+              }));
+              setAmortizeAmount(0);
+            }}
+          >
+            Amortize{" "}
+          </button>
+          <input
+            className={"bankInput"}
+            style={{ width: "15%", margin: "1%" }}
+            type={"number"}
+            value={amortizeAmount}
+            onInput={(e) =>
+              setAmortizeAmount(
+                Math.min(
+                  Math.min(
+                    Math.max(Number(e.currentTarget.value), 0),
+                    player.loanSize,
+                  ),
+                  player.money,
+                ),
+              )
+            }
+          ></input>{" "}
+        </div>
+
+        {/*// MAKE DEPOSIT*/}
+        <div id={"deposit"} className={"bankActions"}>
+          <button
+            className={"bankButton"}
+            onClick={() => {
+              setPlayer((p) => ({
+                ...p,
+                money: p.money - depositAmount,
+                depositSize: p.depositSize + depositAmount,
+              }));
+              setDepositAmount(0);
+            }}
+          >
+            Deposit{" "}
+          </button>
+          <input
+            className={"bankInput"}
+            style={{ width: "15%", margin: "1%" }}
+            type={"number"}
+            value={depositAmount}
+            onInput={(e) =>
+              setDepositAmount(
+                Math.min(
+                  Math.max(Number(e.currentTarget.value), 0),
+                  player.money,
+                ),
+              )
+            }
+          ></input>{" "}
+        </div>
+
+        {/*// TAKE WITHDRAWAL*/}
+        <div id={"withdraw"} className={"bankActions"}>
+          <button
+            className={"bankButton"}
+            onClick={() => {
+              setPlayer((p) => ({
+                ...p,
+                money: p.money + withdrawAmount,
+                depositSize: Math.max(p.depositSize - withdrawAmount, 0),
+              }));
+              setWithdrawAmount(0);
+            }}
+          >
+            Withdraw{" "}
+          </button>
+          <input
+            className={"bankInput"}
+            style={{ width: "15%", margin: "1%" }}
+            type={"number"}
+            value={withdrawAmount}
+            onInput={(e) =>
+              setWithdrawAmount(
+                Math.min(
+                  Math.max(Number(e.currentTarget.value), 0),
+                  player.depositSize,
+                ),
+              )
+            }
+          ></input>{" "}
+        </div>
+
         <button
           style={{
             color: "purple",
@@ -90,8 +220,6 @@ export const BankScreen = ({ setCurrentMenu }: Props) => {
             width: "25%",
             bottom: "5%",
             position: "absolute",
-
-            // transform: "translate(-50%, -50%)",
           }}
           onClick={() => {
             setCurrentMenu("main");

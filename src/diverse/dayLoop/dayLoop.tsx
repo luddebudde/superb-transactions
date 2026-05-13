@@ -10,7 +10,7 @@ import { changeCryptoDrift } from "../priceDriver.ts";
 
 export let dayCount = 1;
 
-export const dayLoop = (
+export const useDayLoop = (
   graphRef: React.RefObject<HTMLDivElement | null>,
   intervalMs = 40,
 ): { graphSize: { width: number; height: number }; xValues: axisValue[] } => {
@@ -20,14 +20,8 @@ export const dayLoop = (
   ]);
   const returnElements = { graphSize, xValues };
 
-  const {
-    setCurrencies,
-    buyCurrency,
-    sellCurrency,
-    player,
-    setPlayer,
-    selectedCurrency,
-  } = useCurrency();
+  const { setCurrencies, buyCurrency, sellCurrency, player, setPlayer } =
+    useCurrency();
 
   // Keep latest values in refs so the stable interval always sees current data
   const buyCurrencyRef = useRef(buyCurrency);
@@ -74,6 +68,7 @@ export const dayLoop = (
           const newValue = lastElement(currency.points).value;
           const pc = playerRef.current.currencies[currency.label];
           handleAutoTransaction(
+            playerRef.current,
             currency,
             pc,
             newValue,

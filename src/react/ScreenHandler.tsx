@@ -5,13 +5,14 @@ import { WealthDistributionScreen } from "./WealthDistributionScreen.tsx";
 
 export const ScreenHandler = () => {
   // const [currentMenu, setCurrentMenu] = useState("main");
-  // const [currentMenu, setCurrentMenu] = useState("bank");
-  const [currentMenu, setCurrentMenu] = useState("distribution");
+  const [currentMenu, setCurrentMenu] = useState("bank");
+  // const [currentMenu, setCurrentMenu] = useState("distribution");
 
   // const screens = {
   //   main: <MainScreen setCurrentMenu={setCurrentMenu} />,
   //   bank: <BankScreen setCurrentMenu={setCurrentMenu} />,
   // };
+
   return (
     <>
       <div

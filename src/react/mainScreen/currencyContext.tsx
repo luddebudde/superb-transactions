@@ -34,6 +34,8 @@ export type PlayerCurrency = {
 // A player object holding money and all per-currency data
 export type Player = {
   money: number;
+  loanSize: number;
+  depositSize: number;
   currencies: Record<string, PlayerCurrency>;
 };
 
@@ -53,11 +55,11 @@ export const makePlayerCurrency = (): PlayerCurrency => ({
   customSellAmount: 0,
   autoBuyStatus: false,
   autoSellStatus: false,
-  autoBuyThreshold: 0,
+  autoBuyThreshold: 55555,
   autoSellThreshold: 0,
 });
 
-export const makeCurrency = (overrides: Partial<Currency> = {}): Currency => ({
+const makeCurrency = (overrides: Partial<Currency> = {}): Currency => ({
   type: "",
   label: "",
   points: [],
@@ -76,9 +78,13 @@ export const CurrencyProvider = ({ children }: CurrencyProviderProps) => {
   );
   const [currencyType, setCurrencyType] = useState<string>("crypto");
   const [player, setPlayer] = useState<Player>({
-    money: 10000000,
+    money: 1000,
+    loanSize: 0,
+    depositSize: 0,
     currencies: {},
   });
+
+  // Migration: ensure all currencies have player entries
 
   const createCurrency = (label: string, type: string) => {
     const newCurrency: Currency = makeCurrency({
@@ -149,22 +155,22 @@ export const CurrencyProvider = ({ children }: CurrencyProviderProps) => {
 
   const buyCurrency = (currency: Currency, amount: number, buyer) => {
     const valuation = lastElement(currency.points).value;
-    // console.log(buyer);
     if (buyer !== player) {
       const purchasableAmount = Math.min(
         Math.floor(buyer.money / valuation),
         amount,
       );
-      if (!purchasableAmount) {
+      if (purchasableAmount < 0) {
         throw reportError("Buyer cannot afford any amount of this currency");
       }
 
       const buyerCurrency = buyer.currencies[currency.label];
       buyer.money -= valuation * purchasableAmount;
       buyerCurrency.owned += purchasableAmount;
+
+      return;
     }
     setPlayer(() => {
-      console.log(buyer);
       const pc = buyer.currencies[currency.label];
       if (!pc) return buyer;
       const purchasableAmount = Math.min(
@@ -247,8 +253,8 @@ type CurrencyContextType = {
   setCurrencyType: React.Dispatch<React.SetStateAction<string>>;
   player: Player;
   setPlayer: React.Dispatch<React.SetStateAction<Player>>;
-  buyCurrency: (currency: Currency, amount: number, buyer) => void;
-  sellCurrency: (currency: Currency, amount: number, buyer) => void;
+  buyCurrency: (currency: Currency, amount: number, buyer?: Player) => void;
+  sellCurrency: (currency: Currency, amount: number, seller?: Player) => void;
   updateCurrency: (
     currency: Currency,
     attribute: keyof Currency,

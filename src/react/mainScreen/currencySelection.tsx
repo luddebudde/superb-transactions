@@ -85,7 +85,6 @@ export const CurrencySelection = () => {
               (player.currencies[c.label]?.averageSpending ?? 0) *
                 (player.currencies[c.label]?.owned ?? 0),
             )}
-            )
           </button>
         ))}
       </div>

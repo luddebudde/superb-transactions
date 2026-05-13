@@ -131,12 +131,12 @@ export const WealthDistributionScreen = ({
     );
   });
 
-  console.log(
-    fourthPercentile,
-    thirdPercentile,
-    secondPercentile,
-    firstPercentile,
-  );
+  // console.log(
+  //   fourthPercentile,
+  //   thirdPercentile,
+  //   secondPercentile,
+  //   firstPercentile,
+  // );
 
   percentiles.reverse();
 
@@ -203,7 +203,6 @@ export const WealthDistributionScreen = ({
           );
         })}
       </div>
-
       <div
         style={{
           backgroundColor: "#2a2a2a",
@@ -213,7 +212,7 @@ export const WealthDistributionScreen = ({
           flexDirection: "column",
           alignItems: "left",
           // justifyContent: "center",
-          padding: "20px",
+          // padding: "20px",
           // gap: "40px",
           marginLeft: "0px",
         }}
@@ -223,7 +222,7 @@ export const WealthDistributionScreen = ({
           value={povertyThreshold}
           onChange={setPovertyThreshold}
           min={0}
-          max={moneyPerCapita * 3}
+          max={middleClassThreshold}
         />
 
         <ThresholdSlider
@@ -290,8 +289,15 @@ export const WealthDistributionScreen = ({
       </div>
       <button
         style={{
-          width: "33%",
+          width: "30%",
           height: "100%",
+          margin: 0,
+          padding: 0,
+          border: "none",
+          boxSizing: "border-box",
+          fontSize: "32px",
+          fontWeight: "bold",
+          cursor: "pointer",
         }}
         onClick={() => {
           setCurrentMenu("main");

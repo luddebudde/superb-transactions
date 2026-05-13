@@ -85,7 +85,7 @@ export const TransactionArea = () => {
               updatePlayerCurrency(
                 selectedCurrency.label,
                 "customBuyAmount",
-                Number(e.currentTarget.value) || 0,
+                Math.max(Number(e.currentTarget.value), 0),
               )
             }
             style={{
@@ -152,7 +152,7 @@ export const TransactionArea = () => {
               updatePlayerCurrency(
                 selectedCurrency.label,
                 "customSellAmount",
-                Number(e.currentTarget.value) || 0,
+                Math.max(Number(e.currentTarget.value), 0),
               )
             }
             style={{
@@ -227,7 +227,7 @@ export const TransactionArea = () => {
                 updatePlayerCurrency(
                   selectedCurrency.label,
                   "autoBuyThreshold",
-                  Number(e.currentTarget.value) || 0,
+                  Math.max(Number(e.currentTarget.value), 0),
                 )
               }
             ></input>{" "}
@@ -252,7 +252,7 @@ export const TransactionArea = () => {
                 updatePlayerCurrency(
                   selectedCurrency.label,
                   "autoSellThreshold",
-                  Number(e.currentTarget.value) || 0,
+                  Math.max(Number(e.currentTarget.value), 0),
                 )
               }
             ></input>{" "}
