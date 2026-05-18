@@ -3,6 +3,7 @@ import { createRoot } from "react-dom/client";
 import "./react/css/index.css";
 import { ScreenHandler } from "./react/ScreenHandler.tsx";
 import { CurrencyProvider } from "./react/mainScreen/currencyContext.tsx";
+import { BankProvider } from "./react/bankScreen/bankProvider.tsx";
 
 export type Vec2 = {
   x: number;
@@ -13,9 +14,11 @@ const prepareGame = () => {
   createRoot(document.getElementById("root")!).render(
     // <StrictMode>
     <CurrencyProvider>
-      <ScreenHandler />,
+      <BankProvider>
+        <ScreenHandler />
+      </BankProvider>
     </CurrencyProvider>,
-    // </StrictMode>,
+    // </StrictMode>
   );
 };
 

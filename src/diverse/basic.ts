@@ -30,8 +30,15 @@ export const lastElement = <T>(array: T[]): T => {
   return array[array.length - 1];
 };
 
+export function largestElement(arr: [], attribute?: string) {
+  if (attribute) {
+    return Math.max(...arr.map((x) => Number(x[attribute])));
+  }
+  return Math.max(...arr);
+}
+
 export const getArrayAverage = (
-  array: any[],
+  array: [],
   attribute: undefined | string = undefined,
 ): number | string => {
   if (attribute === undefined) {
@@ -41,15 +48,12 @@ export const getArrayAverage = (
     );
     return totalValue / array.length;
   } else {
-    const totalValue = array.reduce(
-      (element, p: any) => element + p[attribute],
-      0,
-    );
+    const totalValue = array.reduce((element, p) => element + p[attribute], 0);
     return totalValue / array.length;
   }
 };
 
-export const sum = (array: any[], attribute: string): number => {
+export const sum = (array: [], attribute: string): number => {
   return array.reduce((sum, p) => sum + p[attribute], 0);
 };
 

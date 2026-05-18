@@ -1,7 +1,8 @@
 import { useRef } from "react";
-import { convertPrefix } from "../../diverse/basic.ts";
+import { largestElement, pointCount } from "../../diverse/basic.ts";
 import { useCurrency } from "./currencyContext.tsx";
 import { dayCount, useDayLoop } from "../../diverse/dayLoop/dayLoop.tsx";
+import { CreateGraph } from "../CreateGraph.tsx";
 
 export const StockGraph = () => {
   const graphRef = useRef<HTMLDivElement | null>(null);
@@ -14,12 +15,14 @@ export const StockGraph = () => {
     ? player.currencies[selectedCurrency.label as string]
     : null;
 
-  const linePoints = selectedPoints
-    .map((p) => `${p.pos.x},${p.pos.y}`)
-    .join(" ");
+  // const linePoints = selectedPoints
+  //   .map((p) => `${p.pos.x},${p.pos.y}`)
+  //   .join(" ");
+  // const linePoints = selectedPoints.map((p) => `${0},${0}`).join(" ");
 
   if (!selectedCurrency) return null;
 
+  // console.log(selectedPoints);
   return (
     <div
       id={"stockGraph"}
@@ -34,29 +37,29 @@ export const StockGraph = () => {
         display: "flex",
       }}
     >
-      <svg width="100%" height="100%" style={{ position: "absolute" }}>
-        <polyline
-          points={linePoints}
-          fill="none"
-          stroke="green"
-          strokeWidth={20}
-        />
-      </svg>
-      {selectedPoints.map((p) => (
-        <div
-          key={p.id}
-          style={{
-            position: "absolute",
-            top: p.pos.y,
-            left: p.pos.x,
-            color: "red",
-            textAlign: "center",
-          }}
-          className="graphPoint"
-        >
-          {convertPrefix(p.value)}
-        </div>
-      ))}
+      <CreateGraph
+        array={selectedPoints}
+        bottom={0}
+        graphSize={graphSize}
+        spacing={graphSize.width / pointCount}
+        ceiling={largestElement(selectedPoints, "value")}
+        style={{ color: "red" }}
+      ></CreateGraph>
+      {/*{selectedPoints.map((p) => (*/}
+      {/*  <div*/}
+      {/*    key={p.id}*/}
+      {/*    style={{*/}
+      {/*      position: "absolute",*/}
+      {/*      top: p.pos.y,*/}
+      {/*      left: p.pos.x,*/}
+      {/*      color: "red",*/}
+      {/*      textAlign: "center",*/}
+      {/*    }}*/}
+      {/*    className="graphPoint"*/}
+      {/*  >*/}
+      {/*    {convertPrefix(p.value)}*/}
+      {/*  </div>*/}
+      {/*))}*/}
       {xValues.map((p) => (
         <div
           key={p.id}

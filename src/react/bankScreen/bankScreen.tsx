@@ -1,19 +1,24 @@
-import type { MenuProp } from "./mainScreen/mainScreen.tsx";
+import type { MenuProp } from "../mainScreen/mainScreen.tsx";
 import { useState } from "react";
-import { useCurrency } from "./mainScreen/currencyContext.tsx";
+import { useCurrency } from "../mainScreen/currencyContext.tsx";
+import { useBank } from "./bankProvider.tsx";
+import { largestElement } from "../../diverse/basic.ts";
 
 export const BankScreen = ({ setCurrentMenu }: MenuProp) => {
   const [takeLoanAmount, setTakeLoanAmount] = useState(0);
   const [amortizeAmount, setAmortizeAmount] = useState(0);
-  const [depositAmount, setDepositAmount] = useState(0);
+  // const [depositAmount, setDepositAmount] = useState(0);
   const [withdrawAmount, setWithdrawAmount] = useState(0);
 
-  const [loanHistory, setLoanHistory] = useState(0);
-  const [depositHistory, setDepositHistory] = useState(0);
-  const [interestAmount, setInterestAmount] = useState(0);
-  const [yieldAmount, setYieldAmount] = useState(0);
+  // const [loanHistory, setLoanHistory] = useState(0);
+  // const [depositHistory, setDepositHistory] = useState(0);
+  // const [interestAmount, setInterestAmount] = useState(0);
+  // const [yieldAmount, setYieldAmount] = useState(0);
 
   const { player, setPlayer } = useCurrency();
+  const { depositAmount, setDepositAmount, yieldHistory } = useBank();
+
+  const largestYieldRate = largestElement(yieldHistory);
 
   return (
     <div
@@ -45,9 +50,49 @@ export const BankScreen = ({ setCurrentMenu }: MenuProp) => {
         <div
           id={"yield interest"}
           className={"bankGraph"}
-          style={{ color: "lime" }}
+          style={{ color: "lime", position: "relative" }}
         >
-          Positive Interest
+          <div
+            style={{
+              position: "absolute",
+              top: 10,
+              left: 10,
+              fontSize: "20px",
+              fontWeight: "bold",
+            }}
+          >
+            Positive Interest
+          </div>
+          {yieldHistory.map((value, i) => {
+            const graphHeight = 100;
+            const maxRate = Math.max(2, largestYieldRate);
+            const x = (i / (yieldHistory.length - 1 || 1)) * 100;
+            const y = graphHeight - (value / maxRate) * graphHeight;
+            return (
+              <div
+                key={i}
+                style={{
+                  width: "2vh",
+                  height: "2vh",
+                  borderRadius: "50%",
+                  fontSize: "0.9vw",
+                  position: "absolute",
+                  backgroundColor: "yellow",
+                  border: "2px solid lime",
+                  top: `${y}%`,
+                  left: `${x}%`,
+                  transform: "translate(-50%, -50%)",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  color: "black",
+                  fontWeight: "bold",
+                }}
+              >
+                {Math.round((value - 1) * 100)}%
+              </div>
+            );
+          })}
         </div>
         <div id={"debt"} className={"bankGraph"} style={{ color: "red" }}>
           Loaned Money
@@ -72,14 +117,21 @@ export const BankScreen = ({ setCurrentMenu }: MenuProp) => {
           alignItems: "center",
         }}
       >
-        <text style={{ textAlign: "center", fontSize: "500%" }}>
-          Bank Balance:{" "}
-          <text
-            style={{ textAlign: "center", fontSize: "100%", color: "yellow" }}
-          >
-            {player.money}
-          </text>
-        </text>
+        <div style={{ textAlign: "center", fontSize: "300%" }}>
+          <div>
+            Bank Balance:{" "}
+            <span style={{ color: "yellow" }}>{Math.round(player.money)}</span>
+          </div>
+          <div style={{ fontSize: "50%" }}>
+            Loan:{" "}
+            <span style={{ color: "red" }}>{Math.round(player.loanSize)}</span>
+            {" | "}
+            Deposit:{" "}
+            <span style={{ color: "lime" }}>
+              {Math.round(player.depositSize)}
+            </span>
+          </div>
+        </div>
 
         {/*// TAKE LOAN*/}
         <div id={"loan"} className={"bankActions"}>

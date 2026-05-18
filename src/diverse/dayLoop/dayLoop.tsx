@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { lastElement, pointCount } from "../basic.ts";
+import { lastElement, pointCount, random } from "../basic.ts";
 import {
   type axisValue,
   useCurrency,
@@ -7,12 +7,13 @@ import {
 import { handleAutoTransaction } from "./handleAutoTransaction.ts";
 import { calculateNewPoint } from "./calculateNewPoint.ts";
 import { changeCryptoDrift } from "../priceDriver.ts";
+import { useBank } from "../../react/bankScreen/bankProvider.tsx";
+import { useBankCalculations } from "../../react/bankScreen/useBankCalculations.tsx";
 
 export let dayCount = 1;
 
 export const useDayLoop = (
   graphRef: React.RefObject<HTMLDivElement | null>,
-  intervalMs = 40,
 ): { graphSize: { width: number; height: number }; xValues: axisValue[] } => {
   const [graphSize, setGraphSize] = useState({ width: 0, height: 0 });
   const [xValues, setXValues] = useState<axisValue[]>([
@@ -22,17 +23,21 @@ export const useDayLoop = (
 
   const { setCurrencies, buyCurrency, sellCurrency, player, setPlayer } =
     useCurrency();
+  const bankContext = useBank();
 
   // Keep latest values in refs so the stable interval always sees current data
   const buyCurrencyRef = useRef(buyCurrency);
   const sellCurrencyRef = useRef(sellCurrency);
   const playerRef = useRef(player);
+  const bankContextRef = useRef(bankContext);
   useEffect(() => {
     buyCurrencyRef.current = buyCurrency;
     sellCurrencyRef.current = sellCurrency;
     playerRef.current = player;
-  }, [buyCurrency, sellCurrency, player]);
+    bankContextRef.current = bankContext;
+  }, [buyCurrency, sellCurrency, player, bankContext]);
 
+  const intervalMs = 400;
   useEffect(() => {
     const interval = setInterval(() => {
       if (!graphRef.current) return;
@@ -79,7 +84,7 @@ export const useDayLoop = (
           // Store so setPlayer below can compute averageSpendingLine
           lineData[currency.label as string] = { newValue, maxValue };
 
-          //Y spaces
+          // Y spaces
           const ySpacing = rect.height / 5;
           currency.yValues = Array.from({ length: 5 }, (_, i) => ({
             id: i,
@@ -92,6 +97,14 @@ export const useDayLoop = (
 
         return [...prev];
       });
+
+      if (dayCount % 2 === 0) {
+        useBankCalculations(
+          bankContextRef.current,
+          playerRef.current,
+          setPlayer,
+        );
+      }
 
       // Immutably update averageSpendingLine in player for each currency
       setPlayer((prev) => {

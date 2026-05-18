@@ -268,6 +268,7 @@ type CurrencyContextType = {
 };
 
 export const CurrencyContext = createContext<CurrencyContextType | null>(null);
+
 export const useCurrency = () => {
   const context = useContext(CurrencyContext);
 
